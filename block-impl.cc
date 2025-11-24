@@ -8,7 +8,7 @@ import Cell;
 using namespace std;
 
 Block::Block(char type, int level, bool heavy) 
-    : blockType{type}, level{level}, bottomLeft{0, 0}, orientation{0}, 
+    : blockType{type}, level{level}, bottomLeft{Position {0, 0}}, orientation{0}, 
     isHeavy{heavy}, isPlaced{false}, cellsFilled{4} {}
 
 Block::~Block(){}
