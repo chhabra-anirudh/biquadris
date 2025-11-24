@@ -42,6 +42,7 @@ export class Block {
         void setHeavy(bool heavy);
         bool placed() const;
         void setPlaced(bool placed);
+        void setCellsFilled(int num);
 
         // Cell management
         void addCell(Cell *cell);

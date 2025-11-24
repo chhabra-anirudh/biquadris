@@ -53,6 +53,10 @@ void Block::setPlaced(bool placed) {
     isPlaced = placed;
 }
 
+void Block::setCellsFilled(int num) {
+    cellsFilled = num;
+}
+
 void Block::addCell(Cell *cell) {
     cells.emplace_back(cell);
 }
