@@ -10,7 +10,7 @@ using namespace std;
 export class Block {
     char blockType; // 'I', 'J', 'L', 'O', 'S', 'Z', 'T', '*'
     int level; // Level at which block was generated
-    vector<Cell*> cells; // Cells occupied by this block
+    vector<Cell*> cells; // Cells occupied by this block (non-owning - Board owns them)
     Position bottomLeft; // Bottom-left corner of bounding box
     int orientation; // 0, 1, 2, 3 for rotation states
     bool isHeavy; // Heavy blocks drop automatically
