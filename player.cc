@@ -70,8 +70,8 @@ export class Player{
     private:
         void generateNextBlock();
         bool canMove(const Position& newPos);
-        void applyHeavyDrop();
-        unique_ptr<Level> createLevel(int levelNum, const std::string &scriptFile, int seed);
+        void applyHeavyDrop(bool rotateOn = false);
+        unique_ptr<Level> createLevel(int levelNum, const string &scriptFile, int seed);
 };
 
 

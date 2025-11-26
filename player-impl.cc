@@ -386,7 +386,9 @@ void Player::setScore(int newScore) {
 
 bool Player::isGameOver() const {
     // Game over if current block can't fit at starting position
-    if (!currentBlock) return false;
+    if (!currentBlock) {
+        return false;
+    }
     return (!board->canPlace(currentBlock.get(), 14, 0));
 }
 
