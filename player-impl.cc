@@ -282,4 +282,131 @@ void Player::applySpecialAction(SpecialAction* action) {
     action->apply(this);
 }
 
+void Player::setBlind(bool blind) {
+    isBlind = blind;
+}
 
+void Player::incrementHeavyEffect() {
+    heavyEffect += 2;
+}
+
+void Player::forceBlock(char type) {
+    // Replace next block with specified type
+    bool heavy = (currentLevel >= 3);
+
+    if ('I' == type) {
+        nextBlock = make_unique<IBlock>(currentLevel, heavy);
+        return;
+
+    } else if ('J' == type) {
+        nextBlock = make_unique<JBlock>(currentLevel, heavy);
+        return;
+
+    } else if ('L' == type) {
+        nextBlock = make_unique<LBlock>(currentLevel, heavy);
+        return;
+
+    } else if ('O' == type) {
+        nextBlock = make_unique<OBlock>(currentLevel, heavy);
+        return;
+
+    } else if ('S' == type) {
+        nextBlock = make_unique<SBlock>(currentLevel, heavy);
+        return;
+
+    } else if ('Z' == type) {
+        nextBlock = make_unique<ZBlock>(currentLevel, heavy);
+        return;
+
+    } else if ('T' == type) {
+        nextBlock = make_unique<TBlock>(currentLevel, heavy);
+        return;
+    }
+}
+
+void Player::replaceBlock(char type) {
+    if (currentBlock && !currentBlock->placed()) {
+        Position pos = currentBlock->getPosition();
+        
+        bool heavy = currentLevel >= 3;
+        
+        if ('I' == type) {
+            nextBlock = make_unique<IBlock>(currentLevel, heavy);
+            return;
+
+        } else if ('J' == type) {
+            nextBlock = make_unique<JBlock>(currentLevel, heavy);
+            return;
+
+        } else if ('L' == type) {
+            nextBlock = make_unique<LBlock>(currentLevel, heavy);
+            return;
+
+        } else if ('O' == type) {
+            nextBlock = make_unique<OBlock>(currentLevel, heavy);
+            return;
+
+        } else if ('S' == type) {
+            nextBlock = make_unique<SBlock>(currentLevel, heavy);
+            return;
+
+        } else if ('Z' == type) {
+            nextBlock = make_unique<ZBlock>(currentLevel, heavy);
+            return;
+
+        } else if ('T' == type) {
+            nextBlock = make_unique<TBlock>(currentLevel, heavy);
+            return;
+        }
+        
+        if (currentBlock) {
+            currentBlock->setPosition(pos);
+        }
+    }
+    
+    board->notifyObservers();
+}
+
+Board* Player::getBoard() const { return board.get(); }
+Block* Player::getCurrentBlock() const { return currentBlock.get(); }
+Block* Player::getNextBlock() const { return nextBlock.get(); }
+int Player::getScore() const { return score; }
+int Player::getLevel() const { return currentLevel; }
+bool Player::blind() const { return isBlind; }
+int Player::getHeavyEffect() const { return heavyEffect; }
+int Player::getBlocksWithoutClear() const { return blocksWithoutClear; }
+
+void Player::addScore(int points) {
+    score += points;
+}
+
+void Player::setScore(int newScore) {
+    score = newScore;
+}
+
+bool Player::isGameOver() const {
+    // Game over if current block can't fit at starting position
+    if (!currentBlock) return false;
+    return (!board->canPlace(currentBlock.get(), 14, 0));
+}
+
+void Player::reset() {
+    // Clear board - create new one
+    board = std::make_unique<Board>();
+    
+    // Clear all blocks (automatically deletes them)
+    allBlocks.clear();
+    
+    // Generate new blocks
+    nextBlock = level->generateBlock();
+    currentBlock = level->generateBlock();
+    if (currentBlock) {
+        currentBlock->setPosition(Position(14, 0));
+    }
+    
+    // Reset state
+    score = 0;
+    isBlind = false;
+    heavyEffect = 0;
+    blocksWithoutClear = 0;
+}
