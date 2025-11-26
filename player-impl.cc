@@ -331,15 +331,15 @@ void Player::replaceBlock(char type) {
         bool heavy = currentLevel >= 3;
         
         if ('I' == type) {
-            nextBlock = make_unique<IBlock>(currentLevel, heavy);
+            currentBlock = make_unique<IBlock>(currentLevel, heavy);
             return;
 
         } else if ('J' == type) {
-            nextBlock = make_unique<JBlock>(currentLevel, heavy);
+            currentBlock = make_unique<JBlock>(currentLevel, heavy);
             return;
 
         } else if ('L' == type) {
-            nextBlock = make_unique<LBlock>(currentLevel, heavy);
+            currentBlock = make_unique<LBlock>(currentLevel, heavy);
             return;
 
         } else if ('O' == type) {
@@ -347,15 +347,15 @@ void Player::replaceBlock(char type) {
             return;
 
         } else if ('S' == type) {
-            nextBlock = make_unique<SBlock>(currentLevel, heavy);
+            currentBlock = make_unique<SBlock>(currentLevel, heavy);
             return;
 
         } else if ('Z' == type) {
-            nextBlock = make_unique<ZBlock>(currentLevel, heavy);
+            currentBlock = make_unique<ZBlock>(currentLevel, heavy);
             return;
 
         } else if ('T' == type) {
-            nextBlock = make_unique<TBlock>(currentLevel, heavy);
+            currentBlock = make_unique<TBlock>(currentLevel, heavy);
             return;
         }
         
