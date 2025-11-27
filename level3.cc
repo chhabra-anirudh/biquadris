@@ -7,7 +7,7 @@ import <memory>;
 
 using namespace std;
 
-class Level3: public Level {
+export class Level3: public Level {
     public:
         Level3(const string &sequence, int seed);
         unique_ptr<Block> generateBlock() override;

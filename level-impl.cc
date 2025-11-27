@@ -5,8 +5,19 @@ import <fstream>;
 import <string>;
 
 import Block;
+import IBlock;
+import TBlock;
+import ZBlock;
+import OBlock;
+import LBlock;
+import JBlock;
+import SBlock;
+import StarBlock;
 
-Level::Level(int levelNum, string& sequence, int seed)
+
+using namespace std;
+
+Level::Level(int levelNum, const string& sequence, int seed)
     : levelNum{levelNum}, sequence{sequence}, seed{seed}, isRandom{true} {
         if (!sequence.empty()) {
             filestream.open(sequence);

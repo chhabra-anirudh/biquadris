@@ -3,12 +3,15 @@ module Level3;
 import Block;
 import Level;
 
-import <ctsdlib>;
+import <cstdlib>;
 import <iostream>;
+import <string>;
+
+using namespace std;
 
 Level3::Level3(const string &sequence, int seed):
     Level(3, sequence, seed) {}
-    
+
 unique_ptr<Block> Level3::generateBlock() {
     if (!isRandom) {
         char blockType;
@@ -28,12 +31,12 @@ unique_ptr<Block> Level3::generateBlock() {
     int rnum = rand() % 9;
     char type;
 
-    if (r < 2) type = 'S';
-    else if (r < 4) type = 'Z';
-    else if (r == 4) type = 'O';
-    else if (r == 5) type = 'I';
-    else if (r == 6) type = 'J';
-    else if (r == 7) type = 'L';
+    if (rnum < 2) type = 'S';
+    else if (rnum < 4) type = 'Z';
+    else if (rnum == 4) type = 'O';
+    else if (rnum == 5) type = 'I';
+    else if (rnum == 6) type = 'J';
+    else if (rnum == 7) type = 'L';
     else type == 'T';
 
     return createBlock(type, true);

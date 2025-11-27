@@ -6,7 +6,7 @@ import Level;
 
 using namespace std;
 
-class Level4: public Level {
+export class Level4: public Level {
     int blocks;
     public:
         Level4(const string &sequence, int seed);
