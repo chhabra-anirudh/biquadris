@@ -14,7 +14,7 @@ class Level {
         ifstream filestream;
         int seed;
 
-        virtual unique_ptr<Block> createBlock(char type, bool heavy = false) = 0;
+        unique_ptr<Block> createBlock(char type, bool heavy = false) = 0;
 
     public:
         Level(int levelNum, string& sequence, int seed);

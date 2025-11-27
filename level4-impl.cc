@@ -11,17 +11,6 @@ using namespace std;
 Level4::Level4(const string &sequence, int seed):
     Level(4, sequence, seed), blocks{0} {}
 
-unique_ptr<Block> Level2::createBlock(char type, bool heavy) {
-    if (type == 'I') return make_unique<IBlock>(levelNum, heavy);
-    else if (type == 'J') return make_unique<JBlock>(levelNum, heavy);
-    else if (type == 'O') return make_unique<OBlock>(levelNum, heavy);
-    else if (type == 'L') return make_unique<LBlock>(levelNum, heavy);
-    else if (type == 'S') return make_unique<SBlock>(levelNum, heavy);
-    else if (type == 'Z') return make_unique<ZBlock>(levelNum, heavy);
-    else if (type == 'T') return make_unique<TBlock>(levelNum, heavy);
-    else return nullptr;
-}
-
 unique_ptr<Block> Level4::generateBlock(char type, bool heavy) {
         if (!isRandom) {
         char blockType;
