@@ -1,7 +1,8 @@
 export module SpecialAction;
 
-class Player;
 import <string>;
+
+class Player;
 
 using namespace std;
 
