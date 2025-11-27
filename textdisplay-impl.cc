@@ -1,19 +1,22 @@
-module DisplayText;
+module TextDisplay;
 
+import <vector>;
 import <iostream>;
+import <iomanip>;
+import <string>;
 import Board;
 import Player;
 import Block;
-import Cell;
+//import Cell;
 
 
 using namespace std;
 
 TextDisplay::TextDisplay(Board *b1, Board *b2, Player *p1, Player *p2)
-    : board1{b1}, board2{b2}, player1{p1}, player{p2} {
+    : board1{b1}, board2{b2}, player1{p1}, player2{p2} {
         
     //Initialize grids with empty spaces
-    for (int r = 0, r < ROW_COUNT; r++) {
+    for (int r = 0; r < ROW_COUNT; r++) {
         for (int c = 0; c < COL_COUNT; c++) {
             grid1[r][c] = ' ';
             grid2[r][c] = ' ';
@@ -26,16 +29,16 @@ void TextDisplay::notify() {
     updateGrid(grid2, board2, player2);
 }
 
-void TextDisplay::updateGrid(char grid[ROW_COUNT][COL_COUNT], board* board1, Player *player) {
+void TextDisplay::updateGrid(char grid[ROW_COUNT][COL_COUNT], Board* board, Player *player) {
     //clear grid
-    for (int r = 0, r < ROW_COUNT; r++) {
+    for (int r = 0; r < ROW_COUNT; r++) {
         for (int c = 0; c < COL_COUNT; c++) {
             grid[r][c] = ' ';
         }
     }
     
     // Fill in placed blocks
-    for (int r = 0, r < ROW_COUNT; r++) {
+    for (int r = 0; r < ROW_COUNT; r++) {
         for (int c = 0; c < COL_COUNT; c++) {
             Cell *cell = board->getCell(r, c);
             if (cell && !cell->empty()) {
@@ -60,10 +63,10 @@ void TextDisplay::updateGrid(char grid[ROW_COUNT][COL_COUNT], board* board1, Pla
     }
 }
 
-void TextDisplay::drawGrid(ostream& out, char grid[pos.row][pos.col], Player *player, int playerNum) {
-    out << "Level:    " << player->getLevel() << std::endl;
-    out << "Score:    " << player->getScore() << std::endl;
-    out << "-----------" << std::endl;
+void TextDisplay::drawGrid(ostream& out, char grid[ROW_COUNT][COL_COUNT], Player *player, int playerNum) {
+    out << "Level:    " << player->getLevel() << endl;
+    out << "Score:    " << player->getScore() << endl;
+    out << "-----------" << endl;
 
     //Display from top to bottom (reverse order, skip reserve rows)
     for (int r = 17; r >= 3; --r) {
@@ -115,7 +118,7 @@ void TextDisplay::drawGrid(ostream& out, char grid[pos.row][pos.col], Player *pl
     }
 }   
 
-void TextDisplay::display(ostream& out) {
+void TextDisplay::display(ostream &out) {
     notify();  // Update grids
     
     // Display both boards side by side
