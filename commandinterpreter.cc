@@ -10,7 +10,7 @@ class CommandInterpreter {
     map<string, string> commandMap;
 
     void CommandInitialise();
-    string matchCommand(const string& input)
+    string matchCommand(const string& input);
 
     public:
         CommandInterpreter();
@@ -19,4 +19,3 @@ class CommandInterpreter {
 
         void executeSequence(const string& filename, Player* current, Player* opponent);
 };
-
