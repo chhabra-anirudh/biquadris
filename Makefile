@@ -2,16 +2,15 @@
 # Biquadris Makefile
 # ================================================================
 
-CXX      = g++14
-CXXH     = g++14
-CXXFLAGS = -std=c++20 -Wall -g -fmodules-ts
+CXX      = g++-14
+CXXFLAGS = -std=c++20 -fmodules-ts
 LDFLAGS  = -lX11
 TARGET   = biquadris
 
-# Precompile common standard headers
+# Standard headers to precompile
 STD_HEADERS = iostream fstream sstream vector utility algorithm memory cstdlib map iomanip ctime string
 
-# All source files
+# All source files in order
 SRCS = \
     position.cc position-impl.cc \
     block.cc block-impl.cc \
@@ -40,23 +39,26 @@ SRCS = \
     game.cc game-impl.cc \
     main.cc
 
-# Object files = sources with .o extension
+# Object files
 OBJS = $(SRCS:.cc=.o)
 
 # ================================================================
 # Default rule
 # ================================================================
-all: stdheaders $(TARGET)
+all: precompile $(TARGET)
 
 # Precompile standard headers
-stdheaders:
-	$(CXXH) $(STD_HEADERS)
+precompile:
+	@for header in $(STD_HEADERS); do \
+		echo "Precompiling $$header..."; \
+		echo "#include <$$header>" | $(CXX) $(CXXFLAGS) -x c++-system-header $$header; \
+	done
 
 # Link the final executable
 $(TARGET): $(OBJS)
 	$(CXX) $(OBJS) $(LDFLAGS) -o $(TARGET)
 
-# Pattern rule to build .o from .cc
+# Compile each source file
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -64,8 +66,8 @@ $(TARGET): $(OBJS)
 clean:
 	rm -f $(OBJS) $(TARGET)
 
-# Full reset: also remove precompiled headers
+# Full reset
 cleanall: clean
-	rm -f *.pcm gcm.cache/*
+	rm -rf *.gcm gcm.cache
 
-.PHONY: all clean cleanall stdheaders
+.PHONY: all clean cleanall precompile
