@@ -47,6 +47,7 @@ precompile:
 	$(CXX) $(CXXFLAGS) -c -x c++-system-header algorithm
 	$(CXX) $(CXXFLAGS) -c -x c++-system-header memory
     $(CXX) $(CXXFLAGS) -c -x c++-system-header cstdlib
+    $(CXX) $(CXXFLAGS) -c -x c++-system-header map
 	$(CXX) $(CXXFLAGS) -c -x c++-system-header string
 
 # Rule to convert .cc → .o

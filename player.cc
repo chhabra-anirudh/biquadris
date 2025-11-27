@@ -1,16 +1,57 @@
 export module Player;
 
-import Board;
-import Level;
-import Block;
 import <memory>;
 import <string>;
 import <vector>;
-
+import Position;
+import Board;
+import Level;
+import Block;
+import Block;
+import IBlock;
+import TBlock;
+import ZBlock;
+import OBlock;
+import LBlock;
+import JBlock;
+import SBlock;
+import StarBlock;
+export class Player;
 
 using namespace std;
 
-class SpecialAction;
+// class SpecialAction;
+export class SpecialAction {
+    public:
+        virtual void apply(Player* player) = 0;
+        virtual string getName() const = 0;
+        virtual ~SpecialAction() = default;
+};
+
+// Blind action
+class BlindAction : public SpecialAction {
+    public:
+        void apply(Player* player) override;
+        string getName() const override;
+};
+
+// Heavy action
+class HeavyAction : public SpecialAction {
+    public:
+        void apply(Player* player) override;
+        string getName() const override;
+};
+
+// Force action
+class ForceAction : public SpecialAction {
+        char blockType;
+    public:
+        ForceAction(char blockType);
+        void apply(Player* player) override;
+        string getName() const override;
+        char getBlockType() const;
+};
+
 
 export class Player{
         unique_ptr<Board> board;
@@ -34,7 +75,7 @@ export class Player{
         bool moveRight(int n = 1);
         bool moveDown(int n = 1);
         bool rotate(bool clockwise);
-        void drop;
+        void drop();
 
         //Level management
         void levelUp();

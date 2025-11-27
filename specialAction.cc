@@ -12,7 +12,7 @@ export class SpecialAction {
         virtual void apply(Player* player) = 0;
         virtual string getName() const = 0;
         virtual ~SpecialAction() = default;
-}
+};
 
 // Blind action
 class BlindAction : public SpecialAction {

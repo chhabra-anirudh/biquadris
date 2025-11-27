@@ -1,19 +1,52 @@
 module Player;
 
-import Game;
 import <iostream>;
 import <string>;
 import <memory>;
-import SpecialAction;
+// import SpecialAction;
 import Level0;
 import Level1;
 import Level2;
-import level3;
-import level4;
+import Level3;
+import Level4;
 import <vector>;
 import <utility>;
 
 using namespace std;
+
+// BlindAction
+void BlindAction::apply(Player* player) {
+    player->setBlind(true);
+}
+
+string BlindAction::getName() const {
+    return "blind";
+}
+
+// HeavyAction
+void HeavyAction::apply(Player* player) {
+    player->incrementHeavyEffect();
+}
+
+string HeavyAction::getName() const {
+    return "heavy";
+}
+
+// ForceAction
+ForceAction::ForceAction(char blockType) : blockType{blockType} {}
+
+void ForceAction::apply(Player* player) {
+    player->forceBlock(blockType);
+}
+
+string ForceAction::getName() const {
+    return "force";
+}
+
+char ForceAction::getBlockType() const {
+    return blockType;
+}
+
 
 Player::Player(int startLevel, const string &scriptFile, int seed)
     : board{make_unique<Board>()}, 
@@ -170,7 +203,7 @@ void Player::applyHeavyDrop(bool rotateOn) {
     }
     int totalDrops = 0;
     if (rotateOn) {
-        totalDrops = (currentBlock->heavy() ? 1 : 0)
+        totalDrops = (currentBlock->heavy() ? 1 : 0);
     } else {
         totalDrops = (currentBlock->heavy() ? 1 : 0) + heavyEffect;
     }
