@@ -1,66 +1,71 @@
-# Compiler and flags
-CXX = g++-14
-CXXFLAGS = -std=c++20 -fmodules-ts -Wall -g
+# ================================================================
+# Biquadris Makefile
+# ================================================================
 
-# Name of the final executable
-Executable = a4q1
+CXX      = g++14
+CXXH     = g++14
+CXXFLAGS = -std=c++20 -Wall -g -fmodules-ts
+LDFLAGS  = -lX11
+TARGET   = biquadris
 
-# Source and object files 
-SourceFiles = position.cc position-impl.cc \
-              block.cc cell.cc cell-impl.cc block-impl.cc\
-              iblock.cc iblock-impl.cc jblock.cc jblock-impl.cc \
-              lblock.cc lblock-impl.cc oblock.cc oblock-impl.cc \
-              sblock.cc sblock-impl.cc tblock.cc tblock-impl.cc \
-              zblock.cc zblock-impl.cc starblock.cc starblock-impl.cc \
-              observer.cc observer-impl.cc subject.cc subject-impl.cc \
-              level.cc level-impl.cc level0.cc level0-impl.cc \
-              level1.cc level1-impl.cc level2.cc level2-impl.cc \
-              level3.cc level3-impl.cc level4.cc level4-impl.cc \
-              board.cc board-impl.cc player.cc player-impl.cc \
-              commandinterpreter.cc specialAction.cc specialAction-impl.cc
+# Precompile common standard headers
+STD_HEADERS = iostream fstream sstream vector utility algorithm memory cstdlib map iomanip ctime string
 
+# All source files
+SRCS = \
+    position.cc position-impl.cc \
+    block.cc block-impl.cc \
+    iblock.cc iblock-impl.cc \
+    jblock.cc jblock-impl.cc \
+    lblock.cc lblock-impl.cc \
+    oblock.cc oblock-impl.cc \
+    sblock.cc sblock-impl.cc \
+    zblock.cc zblock-impl.cc \
+    tblock.cc tblock-impl.cc \
+    starblock.cc starblock-impl.cc \
+    observer.cc observer-impl.cc \
+    subject.cc subject-impl.cc \
+    board.cc board-impl.cc \
+    level.cc level-impl.cc \
+    level0.cc level0-impl.cc \
+    level1.cc level1-impl.cc \
+    level2.cc level2-impl.cc \
+    level3.cc level3-impl.cc \
+    level4.cc level4-impl.cc \
+    player.cc player-impl.cc \
+    textdisplay.cc textdisplay-impl.cc \
+    commandinterpreter.cc commandinterpreter-impl.cc \
+    xwindow.cc xwindow-impl.cc \
+    graphicsdisplay.cc graphicsdisplay-impl.cc \
+    game.cc game-impl.cc \
+    main.cc
 
-ObjectFiles = position.o position-impl.o \
-              block.o block-impl.o cell.o cell-impl.o \
-              iblock.o iblock-impl.o jblock.o jblock-impl.o \
-              lblock.o lblock-impl.o oblock.o oblock-impl.o \
-              sblock.o sblock-impl.o tblock.o tblock-impl.o \
-              zblock.o zblock-impl.o starblock.o starblock-impl.o \
-              observer.o observer-impl.o subject.o subject-impl.o \
-              level.o level-impl.o level0.o level0-impl.o \
-              level1.o level1-impl.o level2.o level2-impl.o \
-              level3.o level3-impl.o level4.o level4-impl.o \
-              board.o board-impl.o player.o player-impl.o \
-              commandinterpreter.o specialAction.o specialAction-impl.o
+# Object files = sources with .o extension
+OBJS = $(SRCS:.cc=.o)
 
-# Default target
-all: $(Executable)
+# ================================================================
+# Default rule
+# ================================================================
+all: stdheaders $(TARGET)
 
-# Precompile system headers
-precompile:
-	@mkdir -p gcm.cache
-	$(CXX) $(CXXFLAGS) -c -x c++-system-header iostream
-	$(CXX) $(CXXFLAGS) -c -x c++-system-header fstream
-	$(CXX) $(CXXFLAGS) -c -x c++-system-header sstream
-	$(CXX) $(CXXFLAGS) -c -x c++-system-header vector
-	$(CXX) $(CXXFLAGS) -c -x c++-system-header utility
-	$(CXX) $(CXXFLAGS) -c -x c++-system-header algorithm
-	$(CXX) $(CXXFLAGS) -c -x c++-system-header memory
-    $(CXX) $(CXXFLAGS) -c -x c++-system-header cstdlib
-    $(CXX) $(CXXFLAGS) -c -x c++-system-header map
-    $(CXX) $(CXXFLAGS) -c -x c++-system-header iomanip
-	$(CXX) $(CXXFLAGS) -c -x c++-system-header string
+# Precompile standard headers
+stdheaders:
+	$(CXXH) $(STD_HEADERS)
 
-# Rule to convert .cc → .o
+# Link the final executable
+$(TARGET): $(OBJS)
+	$(CXX) $(OBJS) $(LDFLAGS) -o $(TARGET)
+
+# Pattern rule to build .o from .cc
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Linking step
-$(Executable): precompile $(ObjectFiles)
-	$(CXX) $(CXXFLAGS) $(ObjectFiles) -o $(Executable)
-
-# Clean
-.PHONY: clean
+# Clean up
 clean:
-	rm -f $(Executable) *.o
-	rm -rf gcm.cache
+	rm -f $(OBJS) $(TARGET)
+
+# Full reset: also remove precompiled headers
+cleanall: clean
+	rm -f *.pcm gcm.cache/*
+
+.PHONY: all clean cleanall stdheaders
