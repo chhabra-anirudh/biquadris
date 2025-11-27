@@ -34,11 +34,8 @@ int GraphicsDisplay::getBlockColor(char blockType) const {
 }
 
 void GraphicsDisplay::drawCell(int x, int y, int color) {
+    // Just fill the cell with color - no grid lines
     xw->fillRectangle(x, y, CELL_SIZE, CELL_SIZE, color);
-    xw->fillRectangle(x, y, CELL_SIZE, 1, Xwindow::Black);
-    xw->fillRectangle(x, y, 1, CELL_SIZE, Xwindow::Black);
-    xw->fillRectangle(x + CELL_SIZE - 1, y, 1, CELL_SIZE, Xwindow::Black);
-    xw->fillRectangle(x, y + CELL_SIZE - 1, CELL_SIZE, 1, Xwindow::Black);
 }
 
 void GraphicsDisplay::drawBoard(int boardNum) {
