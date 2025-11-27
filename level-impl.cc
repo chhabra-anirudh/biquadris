@@ -72,6 +72,6 @@ int Level::getLevelNum() const {
     return levelNum;
 }
 
-bool Level::getIsRandom() const {
+bool Level::random() const {
     return isRandom;
 }
