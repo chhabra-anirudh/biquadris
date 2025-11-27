@@ -2,7 +2,7 @@ export module Game;
 
 import Player;
 import TextDisplay;
-import GraphicsDisplay
+import GraphicsDisplay;
 import CommandInterpreter;
 import <string>;
 import <memory>;
@@ -34,4 +34,3 @@ public:
     int getHiScore() const;
     void updateHiScore();
 };
-

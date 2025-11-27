@@ -29,21 +29,21 @@ export class SpecialAction {
 };
 
 // Blind action
-class BlindAction : public SpecialAction {
+export class BlindAction : public SpecialAction {
     public:
         void apply(Player* player) override;
         string getName() const override;
 };
 
 // Heavy action
-class HeavyAction : public SpecialAction {
+export class HeavyAction : public SpecialAction {
     public:
         void apply(Player* player) override;
         string getName() const override;
 };
 
 // Force action
-class ForceAction : public SpecialAction {
+export class ForceAction : public SpecialAction {
         char blockType;
     public:
         ForceAction(char blockType);

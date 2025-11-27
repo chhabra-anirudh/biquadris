@@ -6,7 +6,7 @@ import Player;
 
 using namespace std;
 
-class CommandInterpreter {
+export class CommandInterpreter {
     map<string, string> commandMap;
 
     void CommandInitialise();

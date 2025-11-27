@@ -1,27 +1,28 @@
-export module Xwindow;
-
-import<string>;
-import xwindow;
-
-// #include <X11/Xlib.h>
-// #include <X11/Xutil.h>
-// #include <unistd.h>
+module;
+#include <X11/Xlib.h>
+export module XWindow;
+import <iostream>;
+import <string>;
 
 export class Xwindow {
-        Display *d;
-        Window w;
-        int s;
-        GC gc;
-        unsigned long colours[10]; //can we do this
-    public:
-        Xwindow(int width=500, int height=500);
-        ~Xwindow();
-        Xwindow(const Xwindow&) = delete;
+  Display *d;
+  Window w;
+  int s;
+  GC gc;
+  unsigned long colours[10];
 
-        // Available colours
-    enum {White=0, Black, Red, Green, Blue, Cyan, Yellow, Magenta, Orange, Brown};
+ public:
+  Xwindow(int width=500, int height=500);  // Constructor; displays the window.
+  ~Xwindow();                              // Destructor; destroys the window.
+  Xwindow(const Xwindow&) = delete;
+  Xwindow &operator=(const Xwindow&) = delete;
 
-    // Drawing functions
-    void fillRectangle(int x, int y, int width, int height, int colour=Black);
-    void drawString(int x, int y, const string& msg);
+  // Available colours.
+  enum {White=0, Black, Red, Green, Blue, Cyan, Yellow, Magenta, Orange, Brown};
+
+  // Draws a rectangle
+  void fillRectangle(int x, int y, int width, int height, int colour=Black);
+
+  // Draws a string
+  void drawString(int x, int y, std::string msg);
 };

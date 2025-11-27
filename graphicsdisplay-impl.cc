@@ -1,11 +1,18 @@
 module GraphicsDisplay;
 
+import <vector>;
 import <sstream>;
+import <vector>;
+import Position;
+import Board;
+import Player;
+import Observer;
+import XWindow;
 
 GraphicsDisplay:: GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
     board1{b1}, board2{b2}, player1{p1}, player2{p2} {
         int windowWidth = 600;
-        int widthHeight = 500;
+        int windowHeight = 500;
         xw = new Xwindow(windowWidth, windowHeight);
 
         notify();
@@ -157,5 +164,3 @@ void GraphicsDisplay::notify() {
     drawBoard(1);
     drawBoard(2);
 }
-
-

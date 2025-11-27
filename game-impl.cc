@@ -1,10 +1,11 @@
 module Game;
 
-import <iosteam>;
+import <iostream>;
 import <cstdlib>;
 import TextDisplay;
 import CommandInterpreter;
-import SpecialAction;
+import Player;
+//import SpecialAction;
 
 
 using namespace std;
@@ -13,7 +14,7 @@ Game::Game(int startLevel, int seed, const string &scriptFile1,
     const string &scriptfile2, bool textOnly):
     player1{make_unique<Player>(startLevel, scriptFile1, seed)},
     player2{make_unique<Player>(startLevel, scriptFile1, seed)},
-    seed{seed}, hiscore{0}, textOnly{textOnly} {
+    seed{seed}, hiScore{0}, textOnly{textOnly} {
         
         //set random seed
         srand(seed);
@@ -31,11 +32,11 @@ Game::Game(int startLevel, int seed, const string &scriptFile1,
         player2->getBoard()->attach(textDisplay.get());
 
         //create graphics display if not text-only
-        if (!testOnly){
+        if (!textOnly){
             graphicsDisplay = make_unique<GraphicsDisplay>(
                 player1->getBoard(), player2->getBoard(),player1.get(), player2.get());
             player1->getBoard()->attach(graphicsDisplay.get());
-            player2->getBoard()->attch(graphicsDisplay.get());
+            player2->getBoard()->attach(graphicsDisplay.get());
         }
 
         //Create interpreter
@@ -43,7 +44,7 @@ Game::Game(int startLevel, int seed, const string &scriptFile1,
         interpreter = make_unique<CommandInterpreter>();
     }
 
-    void game::switchPlayer() {
+    void Game::switchPlayer() {
         if (currentPlayer == player1.get()) {
             currentPlayer = player2.get();
             opponent = player1.get();
@@ -56,8 +57,8 @@ Game::Game(int startLevel, int seed, const string &scriptFile1,
     void Game::restart() {
         player1->reset();
         player2->reset();
-        currentPlayer = player1;
-        opponent = player2;
+        currentPlayer = player1.get();
+        opponent = player2.get();
     }
 
 void Game::handleSpecialAction() {
@@ -99,8 +100,8 @@ int Game::getHiScore() const {
 }
 
 void Game::updateHiScore() {
-    int p1score = player1->getScore();
-    int p2score = player2->getScore();
+    int p1Score = player1->getScore();
+    int p2Score = player2->getScore();
 
     if (p1Score > hiScore) {
         hiScore = p1Score;
@@ -198,7 +199,7 @@ void Game::run() {
             }
             fullCommand += input;
             
-            if (!interpreter->parseCommand(fullCommand, currentPlayer, opponent)) {
+            if (!interpreter->parse(fullCommand, currentPlayer, opponent)) {
                 break;  // EOF or quit
             }
         }

@@ -1,12 +1,15 @@
 export module GraphicsDisplay;
 
+import <vector>;
+import Position;
+import Block;
 import Board;
 import Player;
 import Observer;
 import XWindow;
-import Cell;
+//import Cell;
 
-class GraphicsDisplay: public Observer {
+export class GraphicsDisplay: public Observer {
     static const int CELL_SIZE = 20;
     static const int BOARD_WIDTH = 11;
     static const int BOARD_HEIGHT = 15;
