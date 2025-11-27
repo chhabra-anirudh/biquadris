@@ -10,19 +10,21 @@ import Level1;
 import Level2;
 import level3;
 import level4;
+import <vector>;
+import <utility>;
 
 using namespace std;
 
-Player::Player(int startlevel, const string &scriptfile, int seed)
-    : board{make_unique<Board>()},
-    level{createLevel(startLevel, scriptFile, seed)},
-    score{0}, currentLevel{startlevel}, 
-    isBlind{false}, heavyEffect{0}, blocksWithoutClear{0} {
+Player::Player(int startLevel, const string &scriptFile, int seed)
+    : board{make_unique<Board>()}, 
+      level{createLevel(startLevel, scriptFile, seed)},
+      score{0}, currentLevel{startLevel}, 
+      isBlind{false}, heavyEffect{0}, blocksWithoutClear{0}, lastRowsCleared{0} {
     
     // Generate first two blocks
     nextBlock = level->generateBlock();
     currentBlock = level->generateBlock();
-
+    
     // Place current block at starting position
     // Rows 15-17 are reserve rows at top
     // Block starts at row 14 (top visible row), column 0
@@ -83,7 +85,9 @@ bool Player::moveLeft(int n) {
 }
 
 bool Player::moveRight(int n) {
-    if (!currentBlock) return false;
+    if (!currentBlock) {
+        return false;
+    }
     
     bool moved = false;
     for (int i = 0; i < n; ++i) {
@@ -107,7 +111,9 @@ bool Player::moveRight(int n) {
 }
 
 bool Player::moveDown(int n) {
-    if (!currentBlock) return false;
+    if (!currentBlock) {
+        return false;
+    }
     
     bool moved = false;
     for (int i = 0; i < n; ++i) {
@@ -130,7 +136,9 @@ bool Player::moveDown(int n) {
 }
 
 bool Player::rotate(bool clockwise) {
-    if (!currentBlock) return false;
+    if (!currentBlock) {
+        return false;
+    }
     
     // Try rotation
     if (clockwise) {
@@ -151,7 +159,7 @@ bool Player::rotate(bool clockwise) {
         return false;
     }
     
-    applyHeavyDrop(true); // changed added a parameter
+    applyHeavyDrop(true); 
     board->notifyObservers();
     return true;
 }
@@ -204,7 +212,8 @@ void Player::drop() {
         // Game over - block couldn't be placed
         return;
     }
-    
+    // Move currentBlock to allBlocks vector (Player keeps ownership)
+    allBlocks.push_back(std::move(currentBlock));
     // Clear any full rows
     int rowsCleared = board->clearFullRows();
     
@@ -213,19 +222,26 @@ void Player::drop() {
         int rowScore = (currentLevel + rowsCleared) * (currentLevel + rowsCleared);
         score += rowScore;
         blocksWithoutClear = 0;
+
+        // Check for bonus score from fully cleared blocks
+        for (const auto& block : allBlocks) {
+            if (!block->isFilled()) {
+                int blockScore = (block->getLevel() + 1) * (block->getLevel() + 1);
+                score += blockScore;
+            }
+        }
+
     } else {
         blocksWithoutClear++;
         
         // Level 4: Drop star block every 5 blocks without clearing
         if (currentLevel == 4 && blocksWithoutClear > 0 && blocksWithoutClear % 5 == 0) {
-            board->dropStarBlock();
+            // Create star block and take ownership
+            Block* starRaw = board->createStarBlock();
+            unique_ptr<Block> star(starRaw);  // Wrap in unique_ptr
+            board->placeBlock(star.get());
+            allBlocks.push_back(std::move(star));  // Store in allBlocks
         }
-    }
-    
-    // Check if block is fully cleared - add bonus score
-    if (!currentBlock->isFilled()) {
-        int blockScore = (currentBlock->getLevel() + 1) * (currentBlock->getLevel() + 1);
-        score += blockScore;
     }
     
     // Clear blind effect after dropping
@@ -242,6 +258,8 @@ void Player::drop() {
     
     board->notifyObservers();
 }
+
+
 
 void Player::levelUp() {
     if (currentLevel < 4) {
@@ -343,7 +361,7 @@ void Player::replaceBlock(char type) {
             return;
 
         } else if ('O' == type) {
-            nextBlock = make_unique<OBlock>(currentLevel, heavy);
+            currentBlock = make_unique<OBlock>(currentLevel, heavy);
             return;
 
         } else if ('S' == type) {
@@ -394,7 +412,7 @@ bool Player::isGameOver() const {
 
 void Player::reset() {
     // Clear board - create new one
-    board = std::make_unique<Board>();
+    board = make_unique<Board>();
     
     // Clear all blocks (automatically deletes them)
     allBlocks.clear();
@@ -411,4 +429,5 @@ void Player::reset() {
     isBlind = false;
     heavyEffect = 0;
     blocksWithoutClear = 0;
+    lastRowsCleared = 0;
 }

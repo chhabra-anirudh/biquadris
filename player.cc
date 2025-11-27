@@ -5,6 +5,7 @@ import Level;
 import Block;
 import <memory>;
 import <string>;
+import <vector>;
 
 
 using namespace std;
@@ -16,6 +17,7 @@ export class Player{
         unique_ptr<Block> currentBlock;
         unique_ptr<Block> nextBlock;
         unique_ptr<Level> level;
+        vector<unique_ptr<Block>> allBlocks;  // All blocks ever created (Player owns them all)
         int score;
         int currentLevel;
         bool isBlind;
