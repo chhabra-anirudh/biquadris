@@ -65,6 +65,7 @@ $(TARGET): $(OBJS)
 # Clean up
 clean:
 	rm -f $(OBJS) $(TARGET)
+	rm -rf *.gcm gcm.cache
 
 # Full reset
 cleanall: clean
