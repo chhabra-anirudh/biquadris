@@ -28,5 +28,5 @@ export class Level {
         void setSequenceFile(const string& filename);
         
         int getLevelNum() const;
-        bool getIsRandom() const;
+        bool random() const;
 };

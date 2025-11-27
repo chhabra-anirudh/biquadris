@@ -12,7 +12,7 @@ export class Level4: public Level {
         Level4(const string &sequence, int seed);
         unique_ptr<Block> generateBlock() override;
 
-        int getBlocks() const;
-        void addBlocks();
-        void resetBlocks();
+        int getBlocksPlaced() const;
+        void incrementBlocksPlaced();
+        void resetBlocksPlaced();
 };

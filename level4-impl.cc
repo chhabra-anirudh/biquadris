@@ -41,15 +41,15 @@ unique_ptr<Block> Level4::generateBlock() {
     return createBlock(type, true);
 }
 
-int Level4:: getBlocks() const {
+int Level4:: getBlocksPlaced() const {
     return blocks;
 }
 
-void Level4::addBlocks() {
+void Level4::incrementBlocksPlaced() {
     ++blocks;
 }
 
-void Level4::resetBlocks() {
+void Level4::resetBlocksPlaced() {
     blocks = 0;
 }
 
