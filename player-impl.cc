@@ -216,7 +216,7 @@ void Player::drop() {
     allBlocks.push_back(std::move(currentBlock));
     // Clear any full rows
     int rowsCleared = board->clearFullRows();
-    
+    lastRowsCleared = rowsCleared;  // Track for special actions
     if (rowsCleared > 0) {
         // Calculate score for clearing rows
         int rowScore = (currentLevel + rowsCleared) * (currentLevel + rowsCleared);
@@ -259,7 +259,9 @@ void Player::drop() {
     board->notifyObservers();
 }
 
-
+int Player::getLastRowsCleared() const {
+    return lastRowsCleared;
+}
 
 void Player::levelUp() {
     if (currentLevel < 4) {

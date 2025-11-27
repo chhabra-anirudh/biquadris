@@ -23,6 +23,7 @@ export class Player{
         bool isBlind;
         int heavyEffect;
         int blocksWithoutClear;
+        int lastRowsCleared;
 
     public:
         Player(int startLevel, const string &scriptFile, int seed);
@@ -60,6 +61,7 @@ export class Player{
         bool blind() const;
         int getHeavyEffect() const;
         int getBlocksWithoutClear() const;
+        int getLastRowsCleared() const;
          
         // Score management
         void addScore(int points);
@@ -75,8 +77,3 @@ export class Player{
         void applyHeavyDrop(bool rotateOn = false);
         unique_ptr<Level> createLevel(int levelNum, const string &scriptFile, int seed);
 };
-
-
-
-
-
