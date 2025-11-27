@@ -12,7 +12,7 @@ import XWindow;
 GraphicsDisplay:: GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
     board1{b1}, board2{b2}, player1{p1}, player2{p2} {
         int windowWidth = 600;
-        int windowHeight = 500;
+        int windowHeight = 550;
         xw = new Xwindow(windowWidth, windowHeight);
 
         notify();
@@ -101,7 +101,7 @@ void GraphicsDisplay::drawBorders() {
 }
 
 void GraphicsDisplay::drawInfo() {
-    xw->fillRectangle(0, 0, 600, 90, Xwindow::White);
+    xw->fillRectangle(0, 0, 600, 550, Xwindow::White);
     
     std::ostringstream oss1;
     oss1 << "Player 1";
@@ -127,11 +127,12 @@ void GraphicsDisplay::drawInfo() {
     oss2 << "Score: " << player2->getScore();
     xw->drawString(BOARD2_OFFSET_X, 60, oss2.str());
     
-    xw->drawString(BOARD_OFFSET_X, 420, "Next:");
-    xw->drawString(BOARD2_OFFSET_X, 420, "Next:");
+    // Move Next: section below the board
+    xw->drawString(BOARD_OFFSET_X, 475, "Next:");
+    xw->drawString(BOARD2_OFFSET_X, 475, "Next:");
     
-    drawNextBlock(player1, BOARD_OFFSET_X, 440);
-    drawNextBlock(player2, BOARD2_OFFSET_X, 440);
+    drawNextBlock(player1, BOARD_OFFSET_X, 485);
+    drawNextBlock(player2, BOARD2_OFFSET_X, 485);
 }
 
 void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
@@ -146,7 +147,7 @@ void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
     
     for (const auto& pos : positions) {
         int px = x + pos.col * CELL_SIZE;
-        int py = y + (3 - pos.row) * CELL_SIZE; 
+        int py = y + pos.row * CELL_SIZE;  // Fixed: removed the inversion
         drawCell(px, py, color);
     }
     
@@ -154,7 +155,7 @@ void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
 }
 
 void GraphicsDisplay::notify() {
-    xw->fillRectangle(0, 0, 600, 500, Xwindow::White);
+    xw->fillRectangle(0, 0, 600, 550, Xwindow::White);
     
     drawInfo();
     drawBorders();
