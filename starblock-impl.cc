@@ -16,6 +16,3 @@ vector<Position> StarBlock::getShapeCoordinates() const {
     coords.emplace_back(Position {0, 0});
     return coords;
 }
-
-void StarBlock::rotateClockwise() {}
-void StarBlock::rotateCounterClockwise() {}

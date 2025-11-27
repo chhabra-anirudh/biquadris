@@ -3,6 +3,7 @@ export module Level;
 import <fstream>;
 import <memory>;
 import <string>;
+import Block;
 
 using namespace std;
 
@@ -14,7 +15,7 @@ class Level {
         ifstream filestream;
         int seed;
 
-        unique_ptr<Block> createBlock(char type, bool heavy = false) = 0;
+        unique_ptr<Block> createBlock(char type, bool heavy = false);
 
     public:
         Level(int levelNum, string& sequence, int seed);

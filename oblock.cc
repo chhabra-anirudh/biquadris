@@ -1,6 +1,8 @@
 export module OBlock;
 
+import Position;
 import Block;
+import <vector>;
 
 using namespace std;
 
@@ -11,6 +13,4 @@ export class OBlock : public Block {
 
     public:
         OBlock(int level, bool heavy = false);
-        void rotateClockwise() override; // O-block doesn't rotate
-        void rotateCounterClockwise() override; // O-block doesn't rotate
 };

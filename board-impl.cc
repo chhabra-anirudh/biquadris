@@ -4,7 +4,7 @@ import <vector>;
 import <algorithm>;
 import <memory>;
 import Position;
-import Cell;
+//import Cell;
 import Block;
 import StarBlock;
 import Subject;

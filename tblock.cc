@@ -1,6 +1,8 @@
 export module TBlock;
 
+import Position;
 import Block;
+import <vector>;
 
 using namespace std;
 

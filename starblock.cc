@@ -1,6 +1,8 @@
 export module StarBlock;
 
+import Position;
 import Block;
+import <vector>;
 
 using namespace std;
 
@@ -11,6 +13,4 @@ export class StarBlock : public Block {
 
     public:
         StarBlock(int level);
-        void rotateClockwise() override; // Star block doesn't rotate
-        void rotateCounterClockwise() override; // Star block doesn't rotate
 };

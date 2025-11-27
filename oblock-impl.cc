@@ -18,6 +18,3 @@ vector<Position> OBlock::getShapeCoordinates() const {
     coords.emplace_back(Position {1, 1});
     return coords;
 }
-
-void OBlock::rotateClockwise() {}
-void OBlock::rotateCounterClockwise() {}
