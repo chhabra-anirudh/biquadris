@@ -291,7 +291,24 @@ void Player::dropOnce() {
             unique_ptr<Block> star(starRaw);  // Wrap in unique_ptr
             board->placeBlock(star.get());
             allBlocks.push_back(std::move(star));  // Store in allBlocks
-            board->clearFullRows(); // Check for cleared rows after star block drop
+            
+            // Check for cleared rows after star block drop
+            int starRowsCleared = board->clearFullRows();
+            if (starRowsCleared > 0) {
+                // Calculate score for clearing rows with star block
+                int rowScore = (currentLevel + starRowsCleared) * (currentLevel + starRowsCleared);
+                score += rowScore;
+                blocksWithoutClear = 0; // Reset counter since a clear happened
+
+                // Check for bonus score from fully cleared blocks
+                for (const auto& block : allBlocks) {
+                    if (!block->isFilled() && !block->hasScored()) {
+                        int blockScore = (block->getLevel() + 1);
+                        score += blockScore * blockScore;
+                        block->setScored();
+                    }
+                }
+            }
         }
     }
     
