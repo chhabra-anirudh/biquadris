@@ -90,9 +90,9 @@ bool CommandInterpreter::parse(const string& input, Player* current, Player* opp
         return true;
     }
 
-    if (command == "left") for (int j = 0; j < multiplier; ++j) current->moveLeft();
-    else if (command == "right") for (int j = 0; j < multiplier; ++j) current->moveRight();
-    else if (command == "down")  for (int j = 0; j < multiplier; ++j) current->moveDown();
+    if (command == "left") current->moveLeft(multiplier);
+    else if (command == "right") current->moveRight(multiplier);
+    else if (command == "down")  current->moveDown(multiplier);
     else if (command == "clockwise") for (int j = 0; j < multiplier; ++j) current->rotate(true);
     else if (command == "counterclockwise") for (int j = 0; j < multiplier; ++j) current->rotate(false);
     else if (command == "drop")  for (int j = 0; j < multiplier; ++j) current->drop();

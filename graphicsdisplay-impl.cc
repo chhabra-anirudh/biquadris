@@ -145,9 +145,16 @@ void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
     
     int color = getBlockColor(next->getType());
     
+    // Find the height of the bounding box for this block
+    int maxRow = 0;
+    for (const auto& pos : positions) {
+        if (pos.row > maxRow) maxRow = pos.row;
+    }
+    
     for (const auto& pos : positions) {
         int px = x + pos.col * CELL_SIZE;
-        int py = y + pos.row * CELL_SIZE;  // Fixed: removed the inversion
+        // Invert Y-axis to match main board display (higher rows at top)
+        int py = y + (maxRow - pos.row) * CELL_SIZE;
         drawCell(px, py, color);
     }
     
