@@ -291,6 +291,7 @@ void Player::dropOnce() {
             unique_ptr<Block> star(starRaw);  // Wrap in unique_ptr
             board->placeBlock(star.get());
             allBlocks.push_back(std::move(star));  // Store in allBlocks
+            board->clearFullRows(); // Check for cleared rows after star block drop
         }
     }
     
