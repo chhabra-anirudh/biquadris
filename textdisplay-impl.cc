@@ -76,7 +76,7 @@ void TextDisplay::drawGrid(ostream& out, char grid[ROW_COUNT][COL_COUNT], Player
     for (int r = 14; r >= 0; --r) {
         for (int c = 0; c < COL_COUNT; ++c) {
              // Apply blind effect
-            if (player->blind() && r >= 3 && r <= 12 && c >= 2 && c <= 8) {
+            if (player->blind() && r >= 2 && r <= 11 && c >= 2 && c <= 8) {
                 out << '?';
             } else {
                 out << grid[r][c];
