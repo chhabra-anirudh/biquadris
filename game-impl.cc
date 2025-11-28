@@ -10,10 +10,10 @@ import Player;
 
 using namespace std;
 
-Game::Game(int startLevel, int seed, const string &scriptFile1, 
+Game::Game(int startLevel, int seed, const string &scriptfile1, 
     const string &scriptfile2, bool textOnly):
-    player1{make_unique<Player>(startLevel, scriptFile1, seed)},
-    player2{make_unique<Player>(startLevel, scriptFile1, seed)},
+    player1{make_unique<Player>(startLevel, scriptfile1, seed)},
+    player2{make_unique<Player>(startLevel, scriptfile2, seed)},
     seed{seed}, hiScore{0}, textOnly{textOnly} {
         
         //set random seed

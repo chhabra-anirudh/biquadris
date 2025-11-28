@@ -55,8 +55,8 @@ Player::Player(int startLevel, const string &scriptFile, int seed)
       isBlind{false}, heavyEffect{0}, blocksWithoutClear{0}, lastRowsCleared{0} {
     
     // Generate first two blocks
-    nextBlock = level->generateBlock();
     currentBlock = level->generateBlock();
+    nextBlock = level->generateBlock();
     
     // Place current block at starting position
     // Rows 15-17 are reserve rows at top

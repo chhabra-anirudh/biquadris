@@ -30,7 +30,7 @@ int GraphicsDisplay::getBlockColor(char blockType) const {
     else if (blockType == 'Z') return Xwindow::Green;
     else if (blockType == 'T') return Xwindow::Red;
     else if (blockType == '*') return Xwindow::Brown;
-    else if (blockType == 'S') return Xwindow::White;
+    else if (blockType == 'S') return Xwindow::Magenta;
 }
 
 void GraphicsDisplay::drawCell(int x, int y, int color) {

@@ -69,7 +69,7 @@ void TextDisplay::drawGrid(ostream& out, char grid[ROW_COUNT][COL_COUNT], Player
     out << "-----------" << endl;
 
     //Display from top to bottom (reverse order, skip reserve rows)
-    for (int r = 17; r >= 3; --r) {
+    for (int r = 14; r >= 0; --r) {
         for (int c = 0; c < COL_COUNT; ++c) {
              // Apply blind effect
             if (player->blind() && r >= 3 && r <= 12 && c >= 2 && c <= 8) {
@@ -126,13 +126,13 @@ void TextDisplay::display(ostream &out) {
     
     // Headers
     out << "Level:    " << setw(10) << player1->getLevel() 
-        << "          Level:    " << player1->getLevel() << endl;
+        << "          Level:    " << player2->getLevel() << endl;
     out << "Score:    " << setw(10) << player1->getScore() 
         << "          Score:    " << player2->getScore() << endl;
     out << "-----------          -----------" << endl;
     
     // Boards side by side
-    for (int r = 17; r >= 3; --r) {
+    for (int r = 14; r >= 0; --r) {
         for (int c = 0; c < COL_COUNT; ++c) {
             if (player1->blind() && r >= 3 && r <= 12 && c >= 2 && c <= 8) {
                 out << '?';
