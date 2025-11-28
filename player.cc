@@ -74,12 +74,12 @@ export class Player{
         bool moveLeft(int n = 1);
         bool moveRight(int n = 1);
         bool moveDown(int n = 1);
-        bool rotate(bool clockwise);
-        void drop();
+        bool rotate(bool clockwise, int multiplier = 1);
+        void drop(int multiplier = 1);
 
         //Level management
-        void levelUp();
-        void levelDown();
+        void levelUp(int multiplier = 1);
+        void levelDown(int multiplier = 1);
         void setLevel(int newLevel);
         void setNoRandom(const string &file);
         void setRandom();

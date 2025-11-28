@@ -12,11 +12,20 @@ import XWindow;
 using namespace std;
 
 GraphicsDisplay:: GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
-    board1{b1}, board2{b2}, player1{p1}, player2{p2}, hiScore{0} {
+    board1{b1}, board2{b2}, player1{p1}, player2{p2}, hiScore{0},
+    cachedScore1{-1}, cachedLevel1{-1}, cachedScore2{-1}, cachedLevel2{-1}, cachedHiScore{-1},
+    cachedNextBlock1{' '}, cachedNextBlock2{' '} {
         int windowWidth = 600;
         int windowHeight = 550;
         xw = new Xwindow(windowWidth, windowHeight);
 
+        // Initialize board caches with -1 (invalid color)
+        board1Cache.resize(BOARD_HEIGHT * BOARD_WIDTH, -1);
+        board2Cache.resize(BOARD_HEIGHT * BOARD_WIDTH, -1);
+
+        // Draw static borders once
+        drawBorders();
+        
         notify();
 }
 
@@ -52,18 +61,24 @@ void GraphicsDisplay::drawCell(int x, int y, int color) {
 void GraphicsDisplay::drawBoard(int boardNum) {
     Board* board = (boardNum == 1) ? board1 : board2;
     Player* player = (boardNum == 1) ? player1 : player2;
+    std::vector<int>& cache = (boardNum == 1) ? board1Cache : board2Cache;
     
     int offsetX = (boardNum == 1) ? BOARD_OFFSET_X : BOARD2_OFFSET_X;
     int offsetY = BOARD1_OFFSET_Y;
 
+    // 1. Determine the target state of the board
+    // We need to know the color of every cell.
+    // We can iterate and compute it, then compare with cache.
+    
     for (int r = 0; r < BOARD_HEIGHT; ++r) {
         for (int c = 0; c < BOARD_WIDTH; ++c) {
             int x = offsetX + c * CELL_SIZE;
             int y = offsetY + (BOARD_HEIGHT - 1 - r) * CELL_SIZE;
             
-            Cell* cell = board->getCell(r, c);
-            int color = Xwindow::White;
+            int color = Xwindow::White; // Default empty
             
+            // Check static blocks
+            Cell* cell = board->getCell(r, c);
             if (cell && !cell->empty()) {
                 Block* block = cell->getBlock();
                 if (block) {
@@ -71,30 +86,35 @@ void GraphicsDisplay::drawBoard(int boardNum) {
                 }
             }
             
+            // Check blind effect
             if (player->blind() && r >= 2 && r <= 11 && c >= 2 && c <= 8) {
                 color = Xwindow::Black;
             }
             
-            drawCell(x, y, color);
-        }
-    }
-    Block* current = player->getCurrentBlock();
-    if (current && !current->placed()) {
-        std::vector<Position> positions = current->getCurrentPositions();
-        int baseColor = getBlockColor(current->getType());
-        
-        for (const auto& pos : positions) {
-            if (pos.row >= 0 && pos.row < BOARD_HEIGHT) {
-                int x = offsetX + pos.col * CELL_SIZE;
-                int y = offsetY + (BOARD_HEIGHT - 1 - pos.row) * CELL_SIZE;
-                
-                // Apply blind effect to current block if in blind area
-                int color = baseColor;
-                if (player->blind() && pos.row >= 2 && pos.row <= 11 && pos.col >= 2 && pos.col <= 8) {
-                    color = Xwindow::Black;
+            // Check current block (overlay)
+            Block* current = player->getCurrentBlock();
+            if (current && !current->placed()) {
+                std::vector<Position> positions = current->getCurrentPositions();
+                for (const auto& pos : positions) {
+                    if (pos.row == r && pos.col == c) {
+                        int baseColor = getBlockColor(current->getType());
+                         if (player->blind() && r >= 2 && r <= 11 && c >= 2 && c <= 8) {
+                            color = Xwindow::Black;
+                        } else {
+                            color = baseColor;
+                        }
+                        break; 
+                    }
                 }
-                
-                drawCell(x, y, color);
+            }
+
+            // Dirty check
+            int cacheIndex = r * BOARD_WIDTH + c;
+            if (cacheIndex >= 0 && cacheIndex < cache.size()) {
+                if (cache[cacheIndex] != color) {
+                    drawCell(x, y, color);
+                    cache[cacheIndex] = color;
+                }
             }
         }
     }
@@ -119,43 +139,81 @@ void GraphicsDisplay::drawBorders() {
 }
 
 void GraphicsDisplay::drawInfo() {
-    xw->fillRectangle(0, 0, 600, 550, Xwindow::White);
+    // Check and redraw Player 1 Info
+    if (player1->getScore() != cachedScore1 || player1->getLevel() != cachedLevel1) {
+        xw->fillRectangle(BOARD_OFFSET_X, 0, 150, 80, Xwindow::White); // Clear P1 area
+        
+        std::ostringstream oss1;
+        oss1 << "Player 1";
+        xw->drawString(BOARD_OFFSET_X, 20, oss1.str());
+        
+        oss1.str("");
+        oss1 << "Level: " << player1->getLevel();
+        xw->drawString(BOARD_OFFSET_X, 40, oss1.str());
+        
+        oss1.str("");
+        oss1 << "Score: " << player1->getScore();
+        xw->drawString(BOARD_OFFSET_X, 60, oss1.str());
+        
+        cachedScore1 = player1->getScore();
+        cachedLevel1 = player1->getLevel();
+    }
+
+    // Check and redraw Player 2 Info
+    if (player2->getScore() != cachedScore2 || player2->getLevel() != cachedLevel2) {
+        xw->fillRectangle(BOARD2_OFFSET_X, 0, 150, 80, Xwindow::White); // Clear P2 area
+
+        std::ostringstream oss2;
+        oss2 << "Player 2";
+        xw->drawString(BOARD2_OFFSET_X, 20, oss2.str());
+        
+        oss2.str("");
+        oss2 << "Level: " << player2->getLevel();
+        xw->drawString(BOARD2_OFFSET_X, 40, oss2.str());
+        
+        oss2.str("");
+        oss2 << "Score: " << player2->getScore();
+        xw->drawString(BOARD2_OFFSET_X, 60, oss2.str());
+        
+        cachedScore2 = player2->getScore();
+        cachedLevel2 = player2->getLevel();
+    }
     
-    std::ostringstream oss1;
-    oss1 << "Player 1";
-    xw->drawString(BOARD_OFFSET_X, 20, oss1.str());
-    
-    oss1.str("");
-    oss1 << "Level: " << player1->getLevel();
-    xw->drawString(BOARD_OFFSET_X, 40, oss1.str());
-    
-    oss1.str("");
-    oss1 << "Score: " << player1->getScore();
-    xw->drawString(BOARD_OFFSET_X, 60, oss1.str());
-    
-    std::ostringstream oss2;
-    oss2 << "Player 2";
-    xw->drawString(BOARD2_OFFSET_X, 20, oss2.str());
-    
-    oss2.str("");
-    oss2 << "Level: " << player2->getLevel();
-    xw->drawString(BOARD2_OFFSET_X, 40, oss2.str());
-    
-    oss2.str("");
-    oss2 << "Score: " << player2->getScore();
-    xw->drawString(BOARD2_OFFSET_X, 60, oss2.str());
-    
-    // Display Hi Score in the center
-    ostringstream ossHi;
-    ossHi << "Hi Score: " << hiScore;
-    xw->drawString(250, 20, ossHi.str());
+    // Check and redraw Hi Score
+    if (hiScore != cachedHiScore) {
+        xw->fillRectangle(250, 0, 100, 30, Xwindow::White); // Clear Hi Score area
+        ostringstream ossHi;
+        ossHi << "Hi Score: " << hiScore;
+        xw->drawString(250, 20, ossHi.str());
+        cachedHiScore = hiScore;
+    }
     
     // Move Next: section below the board
-    xw->drawString(BOARD_OFFSET_X, 475, "Next:");
-    xw->drawString(BOARD2_OFFSET_X, 475, "Next:");
-    
-    drawNextBlock(player1, BOARD_OFFSET_X, 485);
-    drawNextBlock(player2, BOARD2_OFFSET_X, 485);
+    // We can draw "Next:" once, or check if we need to redraw it. 
+    // It's static, but if we cleared the area we need to put it back.
+    // Let's assume static text "Next:" doesn't need constant redrawing if we don't clear it.
+    // But we might have cleared it in previous bad implementation.
+    // Let's just draw it if next block changes, to be safe, or just leave it.
+    // Actually, let's draw it once in constructor? No, drawInfo is called in notify.
+    // Let's just check next block changes.
+
+    Block* next1 = player1->getNextBlock();
+    char nextType1 = next1 ? next1->getType() : ' ';
+    if (nextType1 != cachedNextBlock1) {
+         xw->fillRectangle(BOARD_OFFSET_X, 450, 150, 100, Xwindow::White); // Clear P1 Next area
+         xw->drawString(BOARD_OFFSET_X, 475, "Next:");
+         drawNextBlock(player1, BOARD_OFFSET_X, 485);
+         cachedNextBlock1 = nextType1;
+    }
+
+    Block* next2 = player2->getNextBlock();
+    char nextType2 = next2 ? next2->getType() : ' ';
+    if (nextType2 != cachedNextBlock2) {
+         xw->fillRectangle(BOARD2_OFFSET_X, 450, 150, 100, Xwindow::White); // Clear P2 Next area
+         xw->drawString(BOARD2_OFFSET_X, 475, "Next:");
+         drawNextBlock(player2, BOARD2_OFFSET_X, 485);
+         cachedNextBlock2 = nextType2;
+    }
 }
 
 void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
@@ -185,10 +243,8 @@ void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
 }
 
 void GraphicsDisplay::notify() {
-    xw->fillRectangle(0, 0, 600, 550, Xwindow::White);
-    
     drawInfo();
-    drawBorders();
+    // drawBorders(); // Borders are static, drawn in constructor
     drawBoard(1);
     drawBoard(2);
 }

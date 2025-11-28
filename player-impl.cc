@@ -170,33 +170,46 @@ bool Player::moveDown(int n) {
     return moved;
 }
 
-bool Player::rotate(bool clockwise) {
+bool Player::rotate(bool clockwise, int multiplier) {
     if (!currentBlock) {
         return false;
     }
     
-    // Try rotation
-    if (clockwise) {
-        currentBlock->rotateClockwise();
-    } else {
-        currentBlock->rotateCounterClockwise();
-    }
-    
-    // Check if rotation is valid
-    Position currentPos = currentBlock->getPosition();
-    if (!canMove(currentPos)) {
-        // Undo rotation
+    bool anyRotation = false;
+    for (int i = 0; i < multiplier; ++i) {
+        // Try rotation
         if (clockwise) {
-            currentBlock->rotateCounterClockwise();
-        } else {
             currentBlock->rotateClockwise();
+        } else {
+            currentBlock->rotateCounterClockwise();
         }
-        return false;
+        
+        // Check if rotation is valid
+        Position currentPos = currentBlock->getPosition();
+        if (!canMove(currentPos)) {
+            // Undo rotation
+            if (clockwise) {
+                currentBlock->rotateCounterClockwise();
+            } else {
+                currentBlock->rotateClockwise();
+            }
+            // If one fails, we stop? Or continue? 
+            // Standard behavior usually implies stopping if blocked, but for rotation in place it might just fail one and try next?
+            // Actually, if it fails, it just doesn't rotate. 
+            // If we are doing 3 rotations, and the 2nd one is invalid, we probably stop there or just don't count it.
+            // But usually "3clockwise" means rotate 90 degrees 3 times. If 2nd fails, 3rd might work? 
+            // No, usually sequential. If 2nd fails, we are still in pos 1. 3rd tries from pos 1.
+            // Let's assume we try each one.
+        } else {
+            anyRotation = true;
+            applyHeavyDrop(true); 
+        }
     }
-    
-    applyHeavyDrop(true); 
-    board->notifyObservers();
-    return true;
+
+    if (anyRotation) {
+        board->notifyObservers();
+    }
+    return anyRotation;
 }
 
 void Player::applyHeavyDrop(bool rotateOn) {
@@ -224,71 +237,73 @@ void Player::applyHeavyDrop(bool rotateOn) {
     }
 }
 
-void Player::drop() {
-    if (!currentBlock) {
-        return;
-    }
-    // Drop block as far as possible
-    while (true) {
-        Position newPos = currentBlock->getPosition();
-        newPos.row -= 1;
-        
-        if (canMove(newPos)) {
-            currentBlock->setPosition(newPos);
-        } else {
-            break;
+void Player::drop(int multiplier) {
+    for (int i = 0; i < multiplier; ++i) {
+        if (!currentBlock) {
+            return;
         }
-    }
-    
-    // Place block on board
-    bool placed = board->placeBlock(currentBlock.get());
-    
-    if (!placed) {
-        // Game over - block couldn't be placed
-        return;
-    }
-    // Move currentBlock to allBlocks vector (Player keeps ownership)
-    allBlocks.push_back(std::move(currentBlock));
-    // Clear any full rows
-    int rowsCleared = board->clearFullRows();
-    lastRowsCleared = rowsCleared;  // Track for special actions
-    if (rowsCleared > 0) {
-        // Calculate score for clearing rows
-        int rowScore = (currentLevel + rowsCleared) * (currentLevel + rowsCleared);
-        score += rowScore;
-        blocksWithoutClear = 0;
-
-        // Check for bonus score from fully cleared blocks
-        for (const auto& block : allBlocks) {
-            if (!block->isFilled()) {
-                int blockScore = (block->getLevel() + 1) * (block->getLevel() + 1);
-                score += blockScore;
+        // Drop block as far as possible
+        while (true) {
+            Position newPos = currentBlock->getPosition();
+            newPos.row -= 1;
+            
+            if (canMove(newPos)) {
+                currentBlock->setPosition(newPos);
+            } else {
+                break;
             }
         }
-
-    } else {
-        blocksWithoutClear++;
         
-        // Level 4: Drop star block every 5 blocks without clearing
-        if (currentLevel == 4 && blocksWithoutClear > 0 && blocksWithoutClear % 5 == 0) {
-            // Create star block and take ownership
-            Block* starRaw = board->createStarBlock();
-            unique_ptr<Block> star(starRaw);  // Wrap in unique_ptr
-            board->placeBlock(star.get());
-            allBlocks.push_back(std::move(star));  // Store in allBlocks
+        // Place block on board
+        bool placed = board->placeBlock(currentBlock.get());
+        
+        if (!placed) {
+            // Game over - block couldn't be placed
+            return;
         }
-    }
-    
-    // Clear blind effect after dropping
-    isBlind = false;
-    
-    // Move to next block - use std::move to transfer ownership
-    currentBlock = std::move(nextBlock);
-    nextBlock = level->generateBlock();
-    
-    // Position new block
-    if (currentBlock) {
-        currentBlock->setPosition(Position(14, 0));
+        // Move currentBlock to allBlocks vector (Player keeps ownership)
+        allBlocks.push_back(std::move(currentBlock));
+        // Clear any full rows
+        int rowsCleared = board->clearFullRows();
+        lastRowsCleared = rowsCleared;  // Track for special actions
+        if (rowsCleared > 0) {
+            // Calculate score for clearing rows
+            int rowScore = (currentLevel + rowsCleared) * (currentLevel + rowsCleared);
+            score += rowScore;
+            blocksWithoutClear = 0;
+
+            // Check for bonus score from fully cleared blocks
+            for (const auto& block : allBlocks) {
+                if (!block->isFilled()) {
+                    int blockScore = (block->getLevel() + 1) * (block->getLevel() + 1);
+                    score += blockScore;
+                }
+            }
+
+        } else {
+            blocksWithoutClear++;
+            
+            // Level 4: Drop star block every 5 blocks without clearing
+            if (currentLevel == 4 && blocksWithoutClear > 0 && blocksWithoutClear % 5 == 0) {
+                // Create star block and take ownership
+                Block* starRaw = board->createStarBlock();
+                unique_ptr<Block> star(starRaw);  // Wrap in unique_ptr
+                board->placeBlock(star.get());
+                allBlocks.push_back(std::move(star));  // Store in allBlocks
+            }
+        }
+        
+        // Clear blind effect after dropping
+        isBlind = false;
+        
+        // Move to next block - use std::move to transfer ownership
+        currentBlock = std::move(nextBlock);
+        nextBlock = level->generateBlock();
+        
+        // Position new block
+        if (currentBlock) {
+            currentBlock->setPosition(Position(14, 0));
+        }
     }
     
     board->notifyObservers();
@@ -298,15 +313,19 @@ int Player::getLastRowsCleared() const {
     return lastRowsCleared;
 }
 
-void Player::levelUp() {
-    if (currentLevel < 4) {
-        setLevel(currentLevel + 1);
+void Player::levelUp(int multiplier) {
+    for (int i = 0; i < multiplier; ++i) {
+        if (currentLevel < 4) {
+            setLevel(currentLevel + 1);
+        }
     }
 }
 
-void Player::levelDown() {
-    if (currentLevel > 0) {
-        setLevel(currentLevel - 1);
+void Player::levelDown(int multiplier) {
+    for (int i = 0; i < multiplier; ++i) {
+        if (currentLevel > 0) {
+            setLevel(currentLevel - 1);
+        }
     }
 }
 

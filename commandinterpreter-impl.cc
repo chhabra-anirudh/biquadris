@@ -101,11 +101,11 @@ bool CommandInterpreter::parse(const string& input, Player* current, Player* opp
     if (command == "left") current->moveLeft(multiplier);
     else if (command == "right") current->moveRight(multiplier);
     else if (command == "down")  current->moveDown(multiplier);
-    else if (command == "clockwise") for (int j = 0; j < multiplier; ++j) current->rotate(true);
-    else if (command == "counterclockwise") for (int j = 0; j < multiplier; ++j) current->rotate(false);
-    else if (command == "drop")  for (int j = 0; j < multiplier; ++j) current->drop();
-    else if (command == "levelup")   for (int j = 0; j < multiplier; ++j) current->levelUp();
-    else if (command == "leveldown") for (int j = 0; j < multiplier; ++j) current->levelDown();
+    else if (command == "clockwise") current->rotate(true, multiplier);
+    else if (command == "counterclockwise") current->rotate(false, multiplier);
+    else if (command == "drop")  current->drop(multiplier);
+    else if (command == "levelup")   current->levelUp(multiplier);
+    else if (command == "leveldown") current->levelDown(multiplier);
 
     else if (command == "restart") {
         // Restart is handled by Game class in run() method
