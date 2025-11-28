@@ -155,23 +155,23 @@ void Game::run() {
         
         // Only parse multiplier if not a block replacement command
         if (!isBlockReplace) {
-            while (i < input.length() && (input[i] >= '0') && (input[i] <= '9')) {
-                ++i;
+        while (i < input.length() && (input[i] >= '0') && (input[i] <= '9')) {
+            ++i;
+        }
+        
+        if (i > 0) {
+            // Convert to int manually
+            multiplier = 0;
+            for (size_t j = 0; j < i; ++j) {
+                multiplier = multiplier * 10 + (input[j] - '0');
             }
             
-            if (i > 0) {
-                // Convert to int manually
-                multiplier = 0;
-                for (size_t j = 0; j < i; ++j) {
-                    multiplier = multiplier * 10 + (input[j] - '0');
-                }
-                
-                // Get rest of string
-                string temp = "";
-                for (size_t j = i; j < input.length(); ++j) {
-                    temp += input[j];
-                }
-                input = temp;
+            // Get rest of string
+            string temp = "";
+            for (size_t j = i; j < input.length(); ++j) {
+                temp += input[j];
+            }
+            input = temp;
             }
         }
         
@@ -241,25 +241,25 @@ void Game::run() {
                 if (!interpreter->parse(input, currentPlayer, opponent)) {
                     break;  // EOF or quit
                 }
-            } else {
-                // Execute command with multiplier
-                // Build full command string manually
-                string fullCommand = "";
-                
-                // Add multiplier digits
-                int temp = multiplier;
-                if (temp > 0) {
-                    string digits = "";
-                    while (temp > 0) {
-                        digits = char('0' + (temp % 10)) + digits;
-                        temp /= 10;
-                    }
-                    fullCommand = digits;
+        } else {
+            // Execute command with multiplier
+            // Build full command string manually
+            string fullCommand = "";
+            
+            // Add multiplier digits
+            int temp = multiplier;
+            if (temp > 0) {
+                string digits = "";
+                while (temp > 0) {
+                    digits = char('0' + (temp % 10)) + digits;
+                    temp /= 10;
                 }
-                fullCommand += input;
-                
-                if (!interpreter->parse(fullCommand, currentPlayer, opponent)) {
-                    break;  // EOF or quit
+                fullCommand = digits;
+            }
+            fullCommand += input;
+            
+            if (!interpreter->parse(fullCommand, currentPlayer, opponent)) {
+                break;  // EOF or quit
                 }
             }
         }

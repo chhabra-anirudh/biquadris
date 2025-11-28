@@ -339,6 +339,9 @@ void Player::applySpecialAction(SpecialAction* action) {
 
 void Player::setBlind(bool blind) {
     isBlind = blind;
+    if (board) {
+        board->notifyObservers();
+    }
 }
 
 void Player::incrementHeavyEffect() {
@@ -351,17 +354,17 @@ void Player::forceBlock(char type) {
         // Save the current position of the undropped block
         Position currentPos = currentBlock->getPosition();
         
-        bool heavy = (currentLevel >= 3);
+    bool heavy = (currentLevel >= 3);
 
-        if ('I' == type) {
+    if ('I' == type) {
             currentBlock = make_unique<IBlock>(currentLevel, heavy);
-        } else if ('J' == type) {
+    } else if ('J' == type) {
             currentBlock = make_unique<JBlock>(currentLevel, heavy);
-        } else if ('L' == type) {
+    } else if ('L' == type) {
             currentBlock = make_unique<LBlock>(currentLevel, heavy);
-        } else if ('O' == type) {
+    } else if ('O' == type) {
             currentBlock = make_unique<OBlock>(currentLevel, heavy);
-        } else if ('S' == type) {
+    } else if ('S' == type) {
             currentBlock = make_unique<SBlock>(currentLevel, heavy);
         } else if ('Z' == type) {
             currentBlock = make_unique<ZBlock>(currentLevel, heavy);
@@ -369,7 +372,7 @@ void Player::forceBlock(char type) {
             currentBlock = make_unique<TBlock>(currentLevel, heavy);
         } else {
             // Invalid block type, don't replace
-            return;
+        return;
         }
         
         // Place the new block at the same position as the old block
