@@ -76,6 +76,9 @@ export class Player{
         int heavyEffect;
         int blocksWithoutClear;
         int lastRowsCleared;
+        string sequenceFile;  // Store sequence file for level changes
+        int seed;  // Store seed for level changes
+        bool isRandom;  // Store random state for level changes
 
     public:
         // Constructor
@@ -132,6 +135,8 @@ export class Player{
         bool canMove(const Position& newPos);
         // Applies the heavy drop for a block
         void applyHeavyDrop(bool rotateOn = false);
+        // Drops a single block (internal helper)
+        void dropOnce();
         // Creates and returns a Level object corresponding to the given level number
         unique_ptr<Level> createLevel(int levelNum, const string &scriptFile, int seed);
 };

@@ -22,5 +22,7 @@ unique_ptr<Block> Level0::generateBlock() {
         if (filestream >> type) {
             return createBlock(type);
         }
+        // If file can't be opened or read, return default I block
+        return createBlock('I');
     }
 }

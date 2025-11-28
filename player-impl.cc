@@ -52,7 +52,8 @@ Player::Player(int startLevel, const string &scriptFile, int seed)
     : board{make_unique<Board>()}, 
       level{createLevel(startLevel, scriptFile, seed)},
       score{0}, currentLevel{startLevel}, 
-      isBlind{false}, heavyEffect{0}, blocksWithoutClear{0}, lastRowsCleared{0} {
+      isBlind{false}, heavyEffect{0}, blocksWithoutClear{0}, lastRowsCleared{0},
+      sequenceFile{scriptFile}, seed{seed}, isRandom{true} {
     
     // Generate first two blocks
     currentBlock = level->generateBlock();
@@ -171,12 +172,12 @@ bool Player::moveDown(int n) {
 }
 
 bool Player::rotate(bool clockwise, int multiplier) {
-    if (!currentBlock) {
-        return false;
-    }
-    
-    bool anyRotation = false;
+    bool success = false;
     for (int i = 0; i < multiplier; ++i) {
+        if (!currentBlock) {
+            return false;
+        }
+        
         // Try rotation
         if (clockwise) {
             currentBlock->rotateClockwise();
@@ -193,17 +194,14 @@ bool Player::rotate(bool clockwise, int multiplier) {
             } else {
                 currentBlock->rotateClockwise();
             }
-            
-        } else {
-            anyRotation = true;
-            applyHeavyDrop(true); 
+            return success;
         }
+        
+        success = true;
+        applyHeavyDrop(true); 
     }
-
-    if (anyRotation) {
-        board->notifyObservers();
-    }
-    return anyRotation;
+    board->notifyObservers();
+    return success;
 }
 
 void Player::applyHeavyDrop(bool rotateOn) {
@@ -225,7 +223,7 @@ void Player::applyHeavyDrop(bool rotateOn) {
             currentBlock->setPosition(newPos);
         } else {
             // Can't drop furthur, so drop the block immediately
-            drop();
+            dropOnce();
             return;
         }
     }
@@ -233,71 +231,75 @@ void Player::applyHeavyDrop(bool rotateOn) {
 
 void Player::drop(int multiplier) {
     for (int i = 0; i < multiplier; ++i) {
-        if (!currentBlock) {
-            return;
-        }
-        // Drop block as far as possible
-        while (true) {
-            Position newPos = currentBlock->getPosition();
-            newPos.row -= 1;
-            
-            if (canMove(newPos)) {
-                currentBlock->setPosition(newPos);
-            } else {
-                break;
-            }
-        }
-        
-        // Place block on board
-        bool placed = board->placeBlock(currentBlock.get());
-        
-        if (!placed) {
-            // Game over - block couldn't be placed
-            return;
-        }
-        // Move currentBlock to allBlocks vector (Player keeps ownership)
-        allBlocks.push_back(std::move(currentBlock));
-        // Clear any full rows
-        int rowsCleared = board->clearFullRows();
-        lastRowsCleared = rowsCleared;  // Track for special actions
-        if (rowsCleared > 0) {
-            // Calculate score for clearing rows
-            int rowScore = (currentLevel + rowsCleared) * (currentLevel + rowsCleared);
-            score += rowScore;
-            blocksWithoutClear = 0;
+        dropOnce();
+    }
+}
 
-            // Check for bonus score from fully cleared blocks
-            for (const auto& block : allBlocks) {
-                if (!block->isFilled()) {
-                    int blockScore = (block->getLevel() + 1) * (block->getLevel() + 1);
-                    score += blockScore;
-                }
-            }
-
+void Player::dropOnce() {
+    if (!currentBlock) {
+        return;
+    }
+    // Drop block as far as possible
+    while (true) {
+        Position newPos = currentBlock->getPosition();
+        newPos.row -= 1;
+        
+        if (canMove(newPos)) {
+            currentBlock->setPosition(newPos);
         } else {
-            blocksWithoutClear++;
-            
-            // Level 4: Drop star block every 5 blocks without clearing
-            if (currentLevel == 4 && blocksWithoutClear > 0 && blocksWithoutClear % 5 == 0) {
-                // Create star block and take ownership
-                Block* starRaw = board->createStarBlock();
-                unique_ptr<Block> star(starRaw);  // Wrap in unique_ptr
-                board->placeBlock(star.get());
-                allBlocks.push_back(std::move(star));  // Store in allBlocks
+            break;
+        }
+    }
+    
+    // Place block on board
+    bool placed = board->placeBlock(currentBlock.get());
+    
+    if (!placed) {
+        // Game over - block couldn't be placed
+        return;
+    }
+    // Move currentBlock to allBlocks vector (Player keeps ownership)
+    allBlocks.push_back(std::move(currentBlock));
+    // Clear any full rows
+    int rowsCleared = board->clearFullRows();
+    lastRowsCleared = rowsCleared;  // Track for special actions
+    if (rowsCleared > 0) {
+        // Calculate score for clearing rows
+        int rowScore = (currentLevel + rowsCleared) * (currentLevel + rowsCleared);
+        score += rowScore;
+        blocksWithoutClear = 0;
+
+        // Check for bonus score from fully cleared blocks
+        for (const auto& block : allBlocks) {
+            if (!block->isFilled()) {
+                int blockScore = (block->getLevel() + 1) * (block->getLevel() + 1);
+                score += blockScore;
             }
         }
+
+    } else {
+        blocksWithoutClear++;
         
-        // Clear blind effect after dropping
-        isBlind = false;
-        
-        // Move to next block - use std::move to transfer ownership
-        currentBlock = std::move(nextBlock);
-        nextBlock = level->generateBlock();
-        
-        // Position new block
-        if (currentBlock) {
-            currentBlock->setPosition(Position(14, 0));
+        // Level 4: Drop star block every 5 blocks without clearing
+        if (currentLevel == 4 && blocksWithoutClear > 0 && blocksWithoutClear % 5 == 0) {
+            // Create star block and take ownership
+            Block* starRaw = board->createStarBlock();
+            unique_ptr<Block> star(starRaw);  // Wrap in unique_ptr
+            board->placeBlock(star.get());
+            allBlocks.push_back(std::move(star));  // Store in allBlocks
         }
+    }
+    
+    // Clear blind effect after dropping
+    isBlind = false;
+    
+    // Move to next block - use std::move to transfer ownership
+    currentBlock = std::move(nextBlock);
+    nextBlock = level->generateBlock();
+    
+    // Position new block
+    if (currentBlock) {
+        currentBlock->setPosition(Position(14, 0));
     }
     
     board->notifyObservers();
@@ -308,18 +310,14 @@ int Player::getLastRowsCleared() const {
 }
 
 void Player::levelUp(int multiplier) {
-    for (int i = 0; i < multiplier; ++i) {
-        if (currentLevel < 4) {
-            setLevel(currentLevel + 1);
-        }
+    for (int i = 0; i < multiplier && currentLevel < 4; ++i) {
+        setLevel(currentLevel + 1);
     }
 }
 
 void Player::levelDown(int multiplier) {
-    for (int i = 0; i < multiplier; ++i) {
-        if (currentLevel > 0) {
-            setLevel(currentLevel - 1);
-        }
+    for (int i = 0; i < multiplier && currentLevel > 0; ++i) {
+        setLevel(currentLevel - 1);
     }
 }
 
@@ -328,22 +326,35 @@ void Player::setLevel(int newLevel) {
         return;
     }
     
+    // Preserve random state from old level before destroying it
+    if (level) {
+        isRandom = level->random();
+    }
+    
     currentLevel = newLevel;
     
-    // Get sequence file from old level
-    string seqFile = "";
-    int seed = 0;
+    // Use stored sequence file and seed when creating new level
+    level = createLevel(newLevel, sequenceFile, seed);
     
-    level = createLevel(newLevel, seqFile, seed);
+    // Restore random state
+    if (level) {
+        level->setRandom(isRandom);
+        if (!isRandom && !sequenceFile.empty()) {
+            level->setSequenceFile(sequenceFile);
+        }
+    }
 }
 
 void Player::setNoRandom(const string& file) {
     level->setRandom(false);
     level->setSequenceFile(file);
+    isRandom = false;
+    sequenceFile = file;  // Update stored sequence file
 }
 
 void Player::setRandom() {
     level->setRandom(true);
+    isRandom = true;
 }
 
 void Player::applySpecialAction(SpecialAction* action) {

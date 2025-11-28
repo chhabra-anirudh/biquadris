@@ -51,6 +51,7 @@ int GraphicsDisplay::getBlockColor(char blockType) const {
     else if (blockType == 'T') return Xwindow::Red;
     else if (blockType == '*') return Xwindow::Brown;
     else if (blockType == 'S') return Xwindow::Magenta;
+    else return Xwindow::Black;  // Default color for unknown block types
 }
 
 void GraphicsDisplay::drawCell(int x, int y, int color) {
