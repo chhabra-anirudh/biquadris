@@ -23,6 +23,7 @@ unique_ptr<Block> Level4::generateBlock() {
                 return createBlock(blockType, true);
             } else {
                 cerr << "Error: Sequence file is empty" << endl;
+                return createBlock('I', true);  // Return default block
             }
         }
     }
@@ -36,7 +37,7 @@ unique_ptr<Block> Level4::generateBlock() {
     else if (num == 5) type = 'I';
     else if (num == 6) type = 'J';
     else if (num == 7) type = 'L';
-    else type == 'T';
+    else type = 'T';
 
     return createBlock(type, true);
 }

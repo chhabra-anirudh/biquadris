@@ -12,3 +12,4 @@ test_scoring.txt
 test_sequence.txt
 test_special_actions.txt
 *.yaml
+*.txt

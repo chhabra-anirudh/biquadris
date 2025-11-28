@@ -256,6 +256,9 @@ void Player::dropOnce() {
     
     if (!placed) {
         // Game over - block couldn't be placed
+        // Clear currentBlock to indicate game over state
+        currentBlock.reset();
+        board->notifyObservers();
         return;
     }
     // Move currentBlock to allBlocks vector (Player keeps ownership)
@@ -297,9 +300,21 @@ void Player::dropOnce() {
     currentBlock = std::move(nextBlock);
     nextBlock = level->generateBlock();
     
+    // Handle case where generateBlock returns nullptr (shouldn't happen with fixes, but safety check)
+    if (!nextBlock) {
+        // Retry generating a block - if still fails, we'll handle it below
+        nextBlock = level->generateBlock();
+    }
+    
     // Position new block
     if (currentBlock) {
         currentBlock->setPosition(Position(14, 0));
+    } else {
+        // If currentBlock is null (shouldn't happen), try to generate a new one
+        currentBlock = level->generateBlock();
+        if (currentBlock) {
+            currentBlock->setPosition(Position(14, 0));
+        }
     }
     
     board->notifyObservers();
