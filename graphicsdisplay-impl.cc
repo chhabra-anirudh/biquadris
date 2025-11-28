@@ -81,12 +81,19 @@ void GraphicsDisplay::drawBoard(int boardNum) {
     Block* current = player->getCurrentBlock();
     if (current && !current->placed()) {
         std::vector<Position> positions = current->getCurrentPositions();
-        int color = getBlockColor(current->getType());
+        int baseColor = getBlockColor(current->getType());
         
         for (const auto& pos : positions) {
             if (pos.row >= 0 && pos.row < BOARD_HEIGHT) {
                 int x = offsetX + pos.col * CELL_SIZE;
                 int y = offsetY + (BOARD_HEIGHT - 1 - pos.row) * CELL_SIZE;
+                
+                // Apply blind effect to current block if in blind area
+                int color = baseColor;
+                if (player->blind() && pos.row >= 2 && pos.row <= 11 && pos.col >= 2 && pos.col <= 8) {
+                    color = Xwindow::Black;
+                }
+                
                 drawCell(x, y, color);
             }
         }

@@ -144,7 +144,7 @@ void TextDisplay::display(ostream &out) {
     // Boards side by side
     for (int r = 14; r >= 0; --r) {
         for (int c = 0; c < COL_COUNT; ++c) {
-            if (player1->blind() && r >= 3 && r <= 12 && c >= 2 && c <= 8) {
+            if (player1->blind() && r >= 2 && r <= 11 && c >= 2 && c <= 8) {
                 out << '?';
             } else {
                 out << grid1[r][c];
@@ -152,7 +152,7 @@ void TextDisplay::display(ostream &out) {
         }
         out << "          ";
         for (int c = 0; c < COL_COUNT; ++c) {
-            if (player2->blind() && r >= 3 && r <= 12 && c >= 2 && c <= 8) {
+            if (player2->blind() && r >= 2 && r <= 11 && c >= 2 && c <= 8) {
                 out << '?';
             } else {
                 out << grid2[r][c];

@@ -346,36 +346,39 @@ void Player::incrementHeavyEffect() {
 }
 
 void Player::forceBlock(char type) {
-    // Replace next block with specified type
-    bool heavy = (currentLevel >= 3);
+    // Replace current block with specified type (not next block)
+    if (currentBlock && !currentBlock->placed()) {
+        // Save the current position of the undropped block
+        Position currentPos = currentBlock->getPosition();
+        
+        bool heavy = (currentLevel >= 3);
 
-    if ('I' == type) {
-        nextBlock = make_unique<IBlock>(currentLevel, heavy);
-        return;
-
-    } else if ('J' == type) {
-        nextBlock = make_unique<JBlock>(currentLevel, heavy);
-        return;
-
-    } else if ('L' == type) {
-        nextBlock = make_unique<LBlock>(currentLevel, heavy);
-        return;
-
-    } else if ('O' == type) {
-        nextBlock = make_unique<OBlock>(currentLevel, heavy);
-        return;
-
-    } else if ('S' == type) {
-        nextBlock = make_unique<SBlock>(currentLevel, heavy);
-        return;
-
-    } else if ('Z' == type) {
-        nextBlock = make_unique<ZBlock>(currentLevel, heavy);
-        return;
-
-    } else if ('T' == type) {
-        nextBlock = make_unique<TBlock>(currentLevel, heavy);
-        return;
+        if ('I' == type) {
+            currentBlock = make_unique<IBlock>(currentLevel, heavy);
+        } else if ('J' == type) {
+            currentBlock = make_unique<JBlock>(currentLevel, heavy);
+        } else if ('L' == type) {
+            currentBlock = make_unique<LBlock>(currentLevel, heavy);
+        } else if ('O' == type) {
+            currentBlock = make_unique<OBlock>(currentLevel, heavy);
+        } else if ('S' == type) {
+            currentBlock = make_unique<SBlock>(currentLevel, heavy);
+        } else if ('Z' == type) {
+            currentBlock = make_unique<ZBlock>(currentLevel, heavy);
+        } else if ('T' == type) {
+            currentBlock = make_unique<TBlock>(currentLevel, heavy);
+        } else {
+            // Invalid block type, don't replace
+            return;
+        }
+        
+        // Place the new block at the same position as the old block
+        if (currentBlock) {
+            currentBlock->setPosition(currentPos);
+            currentBlock->setPlaced(false);  // Ensure it's not marked as placed
+        }
+        
+        board->notifyObservers();
     }
 }
 

@@ -85,7 +85,7 @@ void Game::handleSpecialAction() {
     cout << "Special action triggered! Choose action:" << endl;
     cout << "  blind - Cover opponent's board with ?" << endl;
     cout << "  heavy - Opponent's blocks drop 2 rows on movement" << endl;
-    cout << "  force <type> - Force opponent's next block (e.g., force Z)" << endl;
+    cout << "  force <type> - Force opponent's current block (e.g., force Z)" << endl;
     
     string action;
     cin >> action;
