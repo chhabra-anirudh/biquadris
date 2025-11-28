@@ -22,6 +22,7 @@ export class GraphicsDisplay: public Observer {
     Board* board2;
     Player* player1;
     Player* player2;
+    int hiScore;
     
     int getBlockColor(char blockType) const;
     void drawCell(int x, int y, int color);
@@ -35,4 +36,5 @@ public:
     ~GraphicsDisplay();
     
     void notify() override;
+    void setHiScore(int score);
 };

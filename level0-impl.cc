@@ -20,7 +20,7 @@ unique_ptr<Block> Level0::generateBlock() {
         filestream.open(sequence);
 
         if (filestream >> type) {
-        return createBlock(type);
+            return createBlock(type);
         }
     }
 }

@@ -83,6 +83,8 @@ unique_ptr<Level> Player::createLevel(int levelNum, const string& scriptFile, in
         return make_unique<Level4>(scriptFile, seed);
         
     }
+    // Default to level 0 if invalid level number
+    return make_unique<Level0>(scriptFile, seed);
 }
 
 void Player::generateNextBlock() {

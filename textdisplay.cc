@@ -19,6 +19,7 @@ export class TextDisplay: public Observer {
         Board* board2;
         Player* player1;
         Player* player2;
+        int hiScore;
 
         void updateGrid(char grid[ROW_COUNT][COL_COUNT], Board* board1, Player *player);
         void drawGrid(ostream& out, char grid[ROW_COUNT][COL_COUNT], Player *player, int playerNum);
@@ -28,5 +29,6 @@ export class TextDisplay: public Observer {
 
         void notify() override;
         void display(ostream &out);
+        void setHiScore(int score);
 
 };

@@ -115,7 +115,11 @@ void Game::run() {
     cout << "Welcome to Biquadris!" << endl;
     cout << "Player 1 starts." << endl;
     
-    // Initial display
+    // Initial display (hiScore starts at 0)
+    textDisplay->setHiScore(0);
+    if (graphicsDisplay) {
+        graphicsDisplay->setHiScore(0);
+    }
     textDisplay->display(cout);
     
     string input;
@@ -168,6 +172,19 @@ void Game::run() {
                     }
                     
                     updateHiScore();
+                    textDisplay->setHiScore(hiScore);
+                    if (graphicsDisplay) {
+                        graphicsDisplay->setHiScore(hiScore);
+                    }
+                    textDisplay->display(cout);
+                    cout << "Game Over!" << endl;
+                    
+                    if (currentPlayer == player1.get()) {
+                        cout << "Player 2 wins!" << endl;
+                    } else {
+                        cout << "Player 1 wins!" << endl;
+                    }
+                    
                     cout << "Hi Score: " << hiScore << endl;
                     return;
                 }
@@ -206,6 +223,12 @@ void Game::run() {
         
         // Update hi score
         updateHiScore();
+        
+        // Update displays with new hi score
+        textDisplay->setHiScore(hiScore);
+        if (graphicsDisplay) {
+            graphicsDisplay->setHiScore(hiScore);
+        }
         
         // Display current state
         textDisplay->display(cout);

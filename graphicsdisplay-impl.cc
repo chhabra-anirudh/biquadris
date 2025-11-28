@@ -9,13 +9,19 @@ import Player;
 import Observer;
 import XWindow;
 
+using namespace std;
+
 GraphicsDisplay:: GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
-    board1{b1}, board2{b2}, player1{p1}, player2{p2} {
+    board1{b1}, board2{b2}, player1{p1}, player2{p2}, hiScore{0} {
         int windowWidth = 600;
         int windowHeight = 550;
         xw = new Xwindow(windowWidth, windowHeight);
 
         notify();
+}
+
+void GraphicsDisplay::setHiScore(int score) {
+    hiScore = score;
 }
 
 GraphicsDisplay::~GraphicsDisplay() {
@@ -126,6 +132,11 @@ void GraphicsDisplay::drawInfo() {
     oss2.str("");
     oss2 << "Score: " << player2->getScore();
     xw->drawString(BOARD2_OFFSET_X, 60, oss2.str());
+    
+    // Display Hi Score in the center
+    ostringstream ossHi;
+    ossHi << "Hi Score: " << hiScore;
+    xw->drawString(250, 20, ossHi.str());
     
     // Move Next: section below the board
     xw->drawString(BOARD_OFFSET_X, 475, "Next:");

@@ -13,7 +13,7 @@ import Block;
 using namespace std;
 
 TextDisplay::TextDisplay(Board *b1, Board *b2, Player *p1, Player *p2)
-    : board1{b1}, board2{b2}, player1{p1}, player2{p2} {
+    : board1{b1}, board2{b2}, player1{p1}, player2{p2}, hiScore{0} {
         
     //Initialize grids with empty spaces
     for (int r = 0; r < ROW_COUNT; r++) {
@@ -22,6 +22,10 @@ TextDisplay::TextDisplay(Board *b1, Board *b2, Player *p1, Player *p2)
             grid2[r][c] = ' ';
         }
     }    
+}
+
+void TextDisplay::setHiScore(int score) {
+    hiScore = score;
 }
 
 void TextDisplay::notify() {
@@ -129,6 +133,7 @@ void TextDisplay::display(ostream &out) {
         << "          Level:    " << player2->getLevel() << endl;
     out << "Score:    " << setw(10) << player1->getScore() 
         << "          Score:    " << player2->getScore() << endl;
+    out << "Hi Score: " << setw(10) << hiScore << endl;
     out << "-----------          -----------" << endl;
     
     // Boards side by side
