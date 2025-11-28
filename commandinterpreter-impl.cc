@@ -32,6 +32,14 @@ void CommandInterpreter::CommandInitialise() {
     commandMap["s"] = "S";
     commandMap["z"] = "Z";
     commandMap["t"] = "T";
+    // Also add uppercase versions
+    commandMap["I"] = "I";
+    commandMap["J"] = "J";
+    commandMap["L"] = "L";
+    commandMap["O"] = "O";
+    commandMap["S"] = "S";
+    commandMap["Z"] = "Z";
+    commandMap["T"] = "T";
 }
 
 std::string CommandInterpreter::matchCommand(const std::string& input) {
@@ -100,8 +108,8 @@ bool CommandInterpreter::parse(const string& input, Player* current, Player* opp
     else if (command == "leveldown") for (int j = 0; j < multiplier; ++j) current->levelDown();
 
     else if (command == "restart") {
-        current->reset();
-        opponent->reset();
+        // Restart is handled by Game class in run() method
+        // Just return true to continue
     }
     else if (command == "norandom") {
         string filename;
@@ -115,8 +123,15 @@ bool CommandInterpreter::parse(const string& input, Player* current, Player* opp
         executeSequence(filename, current, opponent);
     }
 
-    else if (command.size() == 1 && string("IJLOSTZ").find(command[0]) != std::string::npos) {
-        current->replaceBlock(command[0]);
+    else if (command.size() == 1) {
+        char blockChar = command[0];
+        // Check both uppercase and lowercase
+        if (blockChar >= 'a' && blockChar <= 'z') {
+            blockChar = blockChar - 'a' + 'A';
+        }
+        if (string("IJLOSTZ").find(blockChar) != std::string::npos) {
+            current->replaceBlock(blockChar);
+        }
     }
 
     return true;

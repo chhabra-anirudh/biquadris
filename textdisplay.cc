@@ -30,5 +30,6 @@ export class TextDisplay: public Observer {
         void notify() override;
         void display(ostream &out);
         void setHiScore(int score);
+        void updateBoards(Board *b1, Board *b2);
 
 };

@@ -37,4 +37,5 @@ public:
     
     void notify() override;
     void setHiScore(int score);
+    void updateBoards(Board* b1, Board* b2);
 };

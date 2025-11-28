@@ -24,6 +24,11 @@ void GraphicsDisplay::setHiScore(int score) {
     hiScore = score;
 }
 
+void GraphicsDisplay::updateBoards(Board* b1, Board* b2) {
+    board1 = b1;
+    board2 = b2;
+}
+
 GraphicsDisplay::~GraphicsDisplay() {
     delete xw;
 }

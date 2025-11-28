@@ -59,6 +59,26 @@ Game::Game(int startLevel, int seed, const string &scriptfile1,
         player2->reset();
         currentPlayer = player1.get();
         opponent = player2.get();
+        
+        // Update display board pointers to new boards
+        textDisplay->updateBoards(player1->getBoard(), player2->getBoard());
+        if (graphicsDisplay) {
+            graphicsDisplay->updateBoards(player1->getBoard(), player2->getBoard());
+        }
+        
+        // Reattach displays to new boards
+        player1->getBoard()->attach(textDisplay.get());
+        player2->getBoard()->attach(textDisplay.get());
+        if (graphicsDisplay) {
+            player1->getBoard()->attach(graphicsDisplay.get());
+            player2->getBoard()->attach(graphicsDisplay.get());
+        }
+        
+        // Notify displays of the reset
+        textDisplay->notify();
+        if (graphicsDisplay) {
+            graphicsDisplay->notify();
+        }
     }
 
 void Game::handleSpecialAction() {
@@ -124,26 +144,35 @@ void Game::run() {
     
     string input;
     while (cin >> input) {
+        // Check if this is a single-letter block replacement command
+        // Block replacement commands (I, J, L, O, S, Z, T) don't accept multipliers
+        bool isBlockReplace = (input.length() == 1 && 
+                              string("IJLOSTZ").find(input[0]) != string::npos);
+        
         // Parse multiplier if present (manual conversion)
         int multiplier = 1;
         size_t i = 0;
-        while (i < input.length() && (input[i] >= '0') && (input[i] <= '9')) {
-            ++i;
-        }
         
-        if (i > 0) {
-            // Convert to int manually
-            multiplier = 0;
-            for (size_t j = 0; j < i; ++j) {
-                multiplier = multiplier * 10 + (input[j] - '0');
+        // Only parse multiplier if not a block replacement command
+        if (!isBlockReplace) {
+            while (i < input.length() && (input[i] >= '0') && (input[i] <= '9')) {
+                ++i;
             }
             
-            // Get rest of string
-            string temp = "";
-            for (size_t j = i; j < input.length(); ++j) {
-                temp += input[j];
+            if (i > 0) {
+                // Convert to int manually
+                multiplier = 0;
+                for (size_t j = 0; j < i; ++j) {
+                    multiplier = multiplier * 10 + (input[j] - '0');
+                }
+                
+                // Get rest of string
+                string temp = "";
+                for (size_t j = i; j < input.length(); ++j) {
+                    temp += input[j];
+                }
+                input = temp;
             }
-            input = temp;
         }
         
         // Special handling for drop command
@@ -200,24 +229,38 @@ void Game::run() {
             switchPlayer();
             
         } else {
-            // Execute command with multiplier
-            // Build full command string manually
-            string fullCommand = "";
-            
-            // Add multiplier digits
-            int temp = multiplier;
-            if (temp > 0) {
-                string digits = "";
-                while (temp > 0) {
-                    digits = char('0' + (temp % 10)) + digits;
-                    temp /= 10;
-                }
-                fullCommand = digits;
+            // Check if restart command before parsing
+            if (input == "restart" || input.find("restart") == 0) {
+                restart();
+                textDisplay->display(cout);
+                continue;
             }
-            fullCommand += input;
             
-            if (!interpreter->parse(fullCommand, currentPlayer, opponent)) {
-                break;  // EOF or quit
+            // For block replacement commands, don't add multiplier prefix
+            if (isBlockReplace) {
+                if (!interpreter->parse(input, currentPlayer, opponent)) {
+                    break;  // EOF or quit
+                }
+            } else {
+                // Execute command with multiplier
+                // Build full command string manually
+                string fullCommand = "";
+                
+                // Add multiplier digits
+                int temp = multiplier;
+                if (temp > 0) {
+                    string digits = "";
+                    while (temp > 0) {
+                        digits = char('0' + (temp % 10)) + digits;
+                        temp /= 10;
+                    }
+                    fullCommand = digits;
+                }
+                fullCommand += input;
+                
+                if (!interpreter->parse(fullCommand, currentPlayer, opponent)) {
+                    break;  // EOF or quit
+                }
             }
         }
         

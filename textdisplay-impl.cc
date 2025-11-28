@@ -28,6 +28,11 @@ void TextDisplay::setHiScore(int score) {
     hiScore = score;
 }
 
+void TextDisplay::updateBoards(Board *b1, Board *b2) {
+    board1 = b1;
+    board2 = b2;
+}
+
 void TextDisplay::notify() {
     updateGrid(grid1, board1, player1);
     updateGrid(grid2, board2, player2);

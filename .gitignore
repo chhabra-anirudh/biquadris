@@ -1,3 +1,13 @@
 *.o
 gcm.cache/
 *.gcm
+TEST_RESULTS.md
+test_basic.txt
+test_blocks.txt
+test_comprehensive.sh
+test_levels.txt
+test_multiplier.txt
+test_restart.txt
+test_scoring.txt
+test_sequence.txt
+test_special_actions.txt
