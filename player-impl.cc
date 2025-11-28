@@ -274,9 +274,10 @@ void Player::dropOnce() {
 
         // Check for bonus score from fully cleared blocks
         for (const auto& block : allBlocks) {
-            if (!block->isFilled()) {
-                int blockScore = (block->getLevel() + 1) * (block->getLevel() + 1);
-                score += blockScore;
+            if (!block->isFilled() && !block->hasScored()) {
+                int blockScore = (block->getLevel() + 1);
+                score += blockScore * blockScore;
+                block->setScored();
             }
         }
 
