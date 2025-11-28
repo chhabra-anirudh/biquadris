@@ -62,7 +62,7 @@ void GraphicsDisplay::drawCell(int x, int y, int color) {
 void GraphicsDisplay::drawBoard(int boardNum) {
     Board* board = (boardNum == 1) ? board1 : board2;
     Player* player = (boardNum == 1) ? player1 : player2;
-    std::vector<int>& cache = (boardNum == 1) ? board1Cache : board2Cache;
+    vector<int>& cache = (boardNum == 1) ? board1Cache : board2Cache;
     
     int offsetX = (boardNum == 1) ? BOARD_OFFSET_X : BOARD2_OFFSET_X;
     int offsetY = BOARD1_OFFSET_Y;
@@ -95,7 +95,7 @@ void GraphicsDisplay::drawBoard(int boardNum) {
             // Check current block (overlay)
             Block* current = player->getCurrentBlock();
             if (current && !current->placed()) {
-                std::vector<Position> positions = current->getCurrentPositions();
+                vector<Position> positions = current->getCurrentPositions();
                 for (const auto& pos : positions) {
                     if (pos.row == r && pos.col == c) {
                         int baseColor = getBlockColor(current->getType());
