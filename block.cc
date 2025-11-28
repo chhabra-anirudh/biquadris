@@ -41,6 +41,7 @@ export class Block {
     bool isHeavy; // Heavy blocks drop automatically
     bool isPlaced; // Has the block been placed on board
     int cellsFilled; // Number of cells still part of this block
+    bool scored; // Whether bonus score has been awarded for this block
 
     protected:
         // Subclasses (Blocks) define their shape using this pure virtual function
@@ -79,4 +80,7 @@ export class Block {
         void decrementCell();
 
         int getOrientation() const;
+
+        bool hasScored() const;
+        void setScored(bool scored = true);
 };

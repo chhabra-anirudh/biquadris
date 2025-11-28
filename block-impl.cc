@@ -38,7 +38,7 @@ int Cell::getCol() const {
 
 Block::Block(char type, int level, bool heavy) 
     : blockType{type}, level{level}, bottomLeft{Position {0, 0}}, orientation{0}, 
-    isHeavy{heavy}, isPlaced{false}, cellsFilled{4} {}
+    isHeavy{heavy}, isPlaced{false}, cellsFilled{4}, scored{false} {}
 
 Block::~Block(){}
 
@@ -124,4 +124,12 @@ vector<Position> Block::getCurrentPositions() const {
     }
 
     return absolute;
+}
+
+bool Block::hasScored() const {
+    return scored;
+}
+
+void Block::setScored(bool scoredFlag) {
+    scored = scoredFlag;
 }
