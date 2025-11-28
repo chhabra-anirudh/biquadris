@@ -23,22 +23,29 @@ using namespace std;
 // class SpecialAction;
 export class SpecialAction {
     public:
+        //Pure virtual apply function
         virtual void apply(Player* player) = 0;
+        //Pure virtual getname function
         virtual string getName() const = 0;
+        // default destructor
         virtual ~SpecialAction() = default;
 };
 
 // Blind action
 export class BlindAction : public SpecialAction {
     public:
+        // Applies the blind effect to the player
         void apply(Player* player) override;
+         // Returns the name of the heavy action
         string getName() const override;
 };
 
 // Heavy action
 export class HeavyAction : public SpecialAction {
     public:
+        // Applies the heavy action to the player
         void apply(Player* player) override;
+        // Returns the name of the heavy action
         string getName() const override;
 };
 
@@ -46,9 +53,13 @@ export class HeavyAction : public SpecialAction {
 export class ForceAction : public SpecialAction {
         char blockType;
     public:
+        // Constructor
         ForceAction(char blockType);
+        // Applies the Force effect to the player
         void apply(Player* player) override;
+         // Returns the name of the force action
         string getName() const override;
+        // Returns the type of block
         char getBlockType() const;
 };
 
@@ -67,8 +78,10 @@ export class Player{
         int lastRowsCleared;
 
     public:
+        // Constructor
         Player(int startLevel, const string &scriptFile, int seed);
-        ~Player() = default; // Smart pointers handle cleanup!
+        // Default destructor
+        ~Player() = default; 
 
         // Movement commands
         bool moveLeft(int n = 1);
@@ -113,8 +126,12 @@ export class Player{
         void reset();
     
     private:
+        //Generates the next block for the player
         void generateNextBlock();
+        //Returns bool whether the current block of the player can move to newPos
         bool canMove(const Position& newPos);
+        // Applies the heavy drop for a block
         void applyHeavyDrop(bool rotateOn = false);
+        // Creates and returns a Level object corresponding to the given level number
         unique_ptr<Level> createLevel(int levelNum, const string &scriptFile, int seed);
 };

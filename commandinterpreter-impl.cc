@@ -129,7 +129,7 @@ bool CommandInterpreter::parse(const string& input, Player* current, Player* opp
         if (blockChar >= 'a' && blockChar <= 'z') {
             blockChar = blockChar - 'a' + 'A';
         }
-        if (string("IJLOSTZ").find(blockChar) != std::string::npos) {
+        if (string("IJLOSTZ").find(blockChar) != string::npos) {
             current->replaceBlock(blockChar);
         }
     }

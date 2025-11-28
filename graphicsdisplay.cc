@@ -34,19 +34,28 @@ export class GraphicsDisplay: public Observer {
     int cachedHiScore;
     char cachedNextBlock1; // Store type of next block
     char cachedNextBlock2;
-    
+    // Returns the display color for a given block type
     int getBlockColor(char blockType) const;
+    // Draws a single colored cell in the window
     void drawCell(int x, int y, int color);
+    // Draws the full board for the given board num
     void drawBoard(int boardNum);
+     // Draws the borders around both boards
     void drawBorders();
+    // Draws player info, scores, and hi-score text
     void drawInfo();
+    // Draws the next block preview for a player
     void drawNextBlock(Player* player, int x, int y);
     
 public:
+    // Constructor
     GraphicsDisplay(Board* b1, Board* b2, Player* p1, Player* p2);
+    // Destructor
     ~GraphicsDisplay();
-    
+    // Redraws the entire graphical display when a board update occurs
     void notify() override;
+    // Updates the hi-score value show in the display
     void setHiScore(int score);
+    // Updates the boards
     void updateBoards(Board* b1, Board* b2);
 };

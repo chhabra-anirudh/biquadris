@@ -39,7 +39,7 @@ export class Block {
     Position bottomLeft; // Bottom-left corner of bounding box
     int orientation; // 0, 1, 2, 3 for rotation states
     bool isHeavy; // Heavy blocks drop automatically
-    bool isPlaced; // Has the block been placed on board?
+    bool isPlaced; // Has the block been placed on board
     int cellsFilled; // Number of cells still part of this block
 
     protected:

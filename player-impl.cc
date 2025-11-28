@@ -193,13 +193,7 @@ bool Player::rotate(bool clockwise, int multiplier) {
             } else {
                 currentBlock->rotateClockwise();
             }
-            // If one fails, we stop? Or continue? 
-            // Standard behavior usually implies stopping if blocked, but for rotation in place it might just fail one and try next?
-            // Actually, if it fails, it just doesn't rotate. 
-            // If we are doing 3 rotations, and the 2nd one is invalid, we probably stop there or just don't count it.
-            // But usually "3clockwise" means rotate 90 degrees 3 times. If 2nd fails, 3rd might work? 
-            // No, usually sequential. If 2nd fails, we are still in pos 1. 3rd tries from pos 1.
-            // Let's assume we try each one.
+            
         } else {
             anyRotation = true;
             applyHeavyDrop(true); 

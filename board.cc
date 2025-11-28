@@ -10,17 +10,17 @@ import Subject;
 using namespace std;
 
 export class Board : public Subject {
-    inline static const int WIDTH = 11;
+    inline static const int WIDTH = 11; // Columns
     inline static const int HEIGHT = 18; // 15 visible + 3 reserved
-    inline static const int DISPLAY_HEIGHT = 15;
+    inline static const int DISPLAY_HEIGHT = 15; // 15 visible
 
     // Using unique_ptr for automatic memory management
     vector<vector<unique_ptr<Cell>>> cells;  // Grid of cells [row][col]
     vector<Block*> placedBlocks;  // Block pointers (non-owning - Player owns blocks)
 
     public:
-        Board();
-        ~Board();
+        Board(); // constuctor
+        ~Board(); // destructor
         Board(const Board &other) = delete;
         Board &operator=(const Board &other) = delete;
 

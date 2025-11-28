@@ -17,20 +17,28 @@ export class Game {
     unique_ptr<TextDisplay> textDisplay;
     unique_ptr<GraphicsDisplay> graphicsDisplay;
     unique_ptr<CommandInterpreter> interpreter;
+    // Random seed for block generation
     int seed;
     int hiScore;
+    // True if running without graphics
     bool textOnly;
     
 public:
+ // constructor
     Game(int startLevel, int seed, const string& scriptFile1, 
          const string& scriptFile2, bool textOnly);
-    ~Game() = default;  // Smart pointers handle cleanup
-    
+    // Default destructor
+    ~Game() = default;  
+    // runs the main game loop, processes input, updates state, and renders output
     void run();
+    // switches player
     void switchPlayer();
+    // restarts the game
     void restart();
+    // handles special actions
     void handleSpecialAction();
-    
+    // returns the hi score
     int getHiScore() const;
+    //updates the hiscore
     void updateHiScore();
 };

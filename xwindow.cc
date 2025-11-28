@@ -14,8 +14,8 @@ export class Xwindow {
  public:
   Xwindow(int width=500, int height=500);  // Constructor; displays the window.
   ~Xwindow();                              // Destructor; destroys the window.
-  Xwindow(const Xwindow&) = delete;
-  Xwindow &operator=(const Xwindow&) = delete;
+  Xwindow(const Xwindow&) = delete; // Copying is disabled by default
+  Xwindow &operator=(const Xwindow&) = delete; // Copying is disabled by default
 
   // Available colours.
   enum {White=0, Black, Red, Green, Blue, Cyan, Yellow, Magenta, Orange, Brown};

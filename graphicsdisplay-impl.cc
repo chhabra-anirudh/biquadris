@@ -189,13 +189,6 @@ void GraphicsDisplay::drawInfo() {
     }
     
     // Move Next: section below the board
-    // We can draw "Next:" once, or check if we need to redraw it. 
-    // It's static, but if we cleared the area we need to put it back.
-    // Let's assume static text "Next:" doesn't need constant redrawing if we don't clear it.
-    // But we might have cleared it in previous bad implementation.
-    // Let's just draw it if next block changes, to be safe, or just leave it.
-    // Actually, let's draw it once in constructor? No, drawInfo is called in notify.
-    // Let's just check next block changes.
 
     Block* next1 = player1->getNextBlock();
     char nextType1 = next1 ? next1->getType() : ' ';
