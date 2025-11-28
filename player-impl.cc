@@ -381,41 +381,35 @@ void Player::forceBlock(char type) {
 
 void Player::replaceBlock(char type) {
     if (currentBlock && !currentBlock->placed()) {
-        Position pos = currentBlock->getPosition();
+        // Save the current position of the undropped block
+        Position currentPos = currentBlock->getPosition();
         
         bool heavy = currentLevel >= 3;
         
+        // Create new block of specified type
         if ('I' == type) {
             currentBlock = make_unique<IBlock>(currentLevel, heavy);
-            return;
-
         } else if ('J' == type) {
             currentBlock = make_unique<JBlock>(currentLevel, heavy);
-            return;
-
         } else if ('L' == type) {
             currentBlock = make_unique<LBlock>(currentLevel, heavy);
-            return;
-
         } else if ('O' == type) {
             currentBlock = make_unique<OBlock>(currentLevel, heavy);
-            return;
-
         } else if ('S' == type) {
             currentBlock = make_unique<SBlock>(currentLevel, heavy);
-            return;
-
         } else if ('Z' == type) {
             currentBlock = make_unique<ZBlock>(currentLevel, heavy);
-            return;
-
         } else if ('T' == type) {
             currentBlock = make_unique<TBlock>(currentLevel, heavy);
+        } else {
+            // Invalid block type, don't replace
             return;
         }
         
+        // Place the new block at the same position as the old block
         if (currentBlock) {
-            currentBlock->setPosition(pos);
+            currentBlock->setPosition(currentPos);
+            currentBlock->setPlaced(false);  // Ensure it's not marked as placed
         }
     }
     
