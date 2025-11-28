@@ -192,10 +192,11 @@ Block* Board::createStarBlock() {
     StarBlock *star = new StarBlock(4); // Level 4 star block
     
     // Find the lowest empty position in center column
+    // Find the highest occupied position in center column
     int targetRow = 0;
-    for (int r = 0; r < HEIGHT; ++r) {
-        if (cells[r][5]->empty()) {
-            targetRow = r;
+    for (int r = HEIGHT - 1; r >= 0; --r) {
+        if (!cells[r][5]->empty()) {
+            targetRow = r + 1;
             break;
         }
     }
