@@ -3,7 +3,6 @@ export module Block;
 import <vector>;
 import Position;
 
-// class Cell;
 export class Block;
 
 using namespace std;

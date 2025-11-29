@@ -1,13 +1,13 @@
 export module GraphicsDisplay;
 
 import <vector>;
+import <memory>;
 import Position;
 import Block;
 import Board;
 import Player;
 import Observer;
 import XWindow;
-//import Cell;
 
 using namespace std;
 
@@ -19,7 +19,7 @@ export class GraphicsDisplay: public Observer {
     static const int BOARD1_OFFSET_Y = 100;
     static const int BOARD2_OFFSET_X = 350;
     
-    Xwindow* xw;
+    std::unique_ptr<Xwindow> xw;
     Board* board1;
     Board* board2;
     Player* player1;

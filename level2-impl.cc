@@ -23,5 +23,3 @@ unique_ptr<Block> Level2::generateBlock() {
     else if (num == 6) type = 'T';
     return createBlock(type);
 }
-
-

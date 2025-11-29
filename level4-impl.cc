@@ -53,7 +53,3 @@ void Level4::incrementBlocksPlaced() {
 void Level4::resetBlocksPlaced() {
     blocks = 0;
 }
-
-
-
-

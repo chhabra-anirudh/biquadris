@@ -2,6 +2,7 @@ module GraphicsDisplay;
 
 import <vector>;
 import <sstream>;
+import <memory>;
 import Position;
 import Board;
 import Player;
@@ -14,7 +15,7 @@ GraphicsDisplay::GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
     board1{b1}, board2{b2}, player1{p1}, player2{p2}, hiScore{0} {
         int windowWidth = 600;
         int windowHeight = 550;
-        xw = new Xwindow(windowWidth, windowHeight);
+        xw = std::make_unique<Xwindow>(windowWidth, windowHeight);
 
         drawBorders();
         
@@ -32,9 +33,7 @@ void GraphicsDisplay::updateBoards(Board* b1, Board* b2) {
     board2 = b2;
 }
 
-GraphicsDisplay::~GraphicsDisplay() {
-    delete xw;
-}
+GraphicsDisplay::~GraphicsDisplay() = default;
 
 // associate colour for each block
 int GraphicsDisplay::getBlockColor(char blockType) const {
