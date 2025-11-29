@@ -38,10 +38,10 @@ export class Block {
     vector<Cell*> cells; // Cells occupied by this block (non-owning - Board owns them)
     Position bottomLeft; // Bottom-left corner of bounding box
     int orientation; // 0, 1, 2, 3 for rotation states
-    bool isHeavy; // Heavy blocks drop automatically
-    bool isPlaced; // Has the block been placed on board
+    bool isHeavy; 
+    bool isPlaced; 
     int cellsFilled; // Number of cells still part of this block
-    bool scored; // Whether bonus score has been awarded for this block
+    bool scored; 
 
     protected:
         // Subclasses (Blocks) define their shape using this pure virtual function

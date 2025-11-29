@@ -9,6 +9,8 @@ import Observer;
 import XWindow;
 //import Cell;
 
+using namespace std;
+
 export class GraphicsDisplay: public Observer {
     static const int CELL_SIZE = 20;
     static const int BOARD_WIDTH = 11;
@@ -25,8 +27,8 @@ export class GraphicsDisplay: public Observer {
     int hiScore;
     
     // Cache for dirty checking
-    std::vector<int> board1Cache;
-    std::vector<int> board2Cache;
+    vector<int> board1Cache;
+    vector<int> board2Cache;
     int cachedScore1;
     int cachedLevel1;
     int cachedScore2;
