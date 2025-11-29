@@ -261,7 +261,7 @@ void Player::dropOnce() {
         return;
     }
     // Move currentBlock to allBlocks vector (Player keeps ownership)
-    allBlocks.push_back(std::move(currentBlock));
+    allBlocks.push_back(move(currentBlock));
     // Clear any full rows
     int rowsCleared = board->clearFullRows();
     lastRowsCleared = rowsCleared;  // Track for special actions
@@ -289,7 +289,7 @@ void Player::dropOnce() {
             Block* starRaw = board->createStarBlock();
             unique_ptr<Block> star(starRaw);  // Wrap in unique_ptr
             board->placeBlock(star.get());
-            allBlocks.push_back(std::move(star));  // Store in allBlocks
+            allBlocks.push_back(move(star));  // Store in allBlocks
             
             // Check for cleared rows after star block drop
             int starRowsCleared = board->clearFullRows();
@@ -314,8 +314,8 @@ void Player::dropOnce() {
     // Clear blind effect after dropping
     isBlind = false;
     
-    // Move to next block - use std::move to transfer ownership
-    currentBlock = std::move(nextBlock);
+    // Move to next block - use move to transfer ownership
+    currentBlock = move(nextBlock);
     nextBlock = level->generateBlock();
     
     // Handle case where generateBlock returns nullptr (shouldn't happen with fixes, but safety check)

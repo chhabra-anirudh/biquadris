@@ -15,7 +15,7 @@ GraphicsDisplay::GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
     board1{b1}, board2{b2}, player1{p1}, player2{p2}, hiScore{0} {
         int windowWidth = 600;
         int windowHeight = 550;
-        xw = std::make_unique<Xwindow>(windowWidth, windowHeight);
+        xw = make_unique<Xwindow>(windowWidth, windowHeight);
 
         drawBorders();
         
@@ -134,7 +134,7 @@ void GraphicsDisplay::drawInfo() {
     xw->fillRectangle(BOARD_OFFSET_X, 450, 150, 100, Xwindow::White);
     xw->fillRectangle(BOARD2_OFFSET_X, 450, 150, 100, Xwindow::White);
 
-    std::ostringstream oss;
+    ostringstream oss;
     oss << "Player 1";
     xw->drawString(BOARD_OFFSET_X, 20, oss.str());
     
@@ -184,7 +184,7 @@ void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
     // temporary block positioning at origin
     Position origPos = next->getPosition();
     next->setPosition(Position(0, 0));
-    std::vector<Position> positions = next->getCurrentPositions();
+    vector<Position> positions = next->getCurrentPositions();
     
     int color = getBlockColor(next->getType());
     

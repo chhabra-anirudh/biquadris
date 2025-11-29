@@ -1,610 +1,448 @@
-# Biquadris UML Diagram - YAML Representation
-# Public methods only (excluding constructors, destructors, accessors, mutators, big 5)
-
 diagram:
-  name: "Biquadris Class Diagram"
-  type: "UML Class Diagram"
-  
+  name: "Biquadris Complete UML"
+  type: "class"
+  description: |
+    Full class inventory for the Biquadris codebase, including every
+    member field (private/protected/public), method (constructors,
+    destructors, helpers, operators), constants, and primary
+    relationships.
+
 classes:
-  # Core Game Classes
-  - name: "Game"
-    module: "Game"
+  - name: Position
+    module: Position
+    stereotype: struct
+    fields:
+      - { name: row, type: int, visibility: public }
+      - { name: col, type: int, visibility: public }
     methods:
-      - name: "run"
-        return_type: "void"
-        visibility: "public"
-      - name: "switchPlayer"
-        return_type: "void"
-        visibility: "public"
-      - name: "restart"
-        return_type: "void"
-        visibility: "public"
-      - name: "handleSpecialAction"
-        return_type: "void"
-        visibility: "public"
+      - { name: Position, kind: constructor, parameters: ["int row = 0", "int col = 0"], visibility: public }
+      - { name: operator==, return_type: bool, parameters: ["const Position& other"], visibility: public, const: true }
+      - { name: operator!=, return_type: bool, parameters: ["const Position& other"], visibility: public, const: true }
+
+  - name: Cell
+    module: Block
+    fields:
+      - { name: row, type: int, visibility: private }
+      - { name: col, type: int, visibility: private }
+      - { name: occupiedBy, type: Block*, visibility: private }
+      - { name: isEmpty, type: bool, visibility: private }
+    methods:
+      - { name: Cell, kind: constructor, parameters: ["int row = 0", "int col = 0"], visibility: public }
+      - { name: occupy, return_type: void, parameters: ["Block* block"], visibility: public }
+      - { name: clear, return_type: void, visibility: public }
+      - { name: getBlock, return_type: Block*, visibility: public, const: true }
+      - { name: empty, return_type: bool, visibility: public, const: true }
+      - { name: getRow, return_type: int, visibility: public, const: true }
+      - { name: getCol, return_type: int, visibility: public, const: true }
     relationships:
-      - type: "composition"
-        target: "Player"
-        multiplicity: "2"
-      - type: "composition"
-        target: "TextDisplay"
-        multiplicity: "1"
-      - type: "composition"
-        target: "GraphicsDisplay"
-        multiplicity: "0..1"
-      - type: "composition"
-        target: "CommandInterpreter"
-        multiplicity: "1"
+      - { type: association, target: Block, role: occupant }
 
-  - name: "Player"
-    module: "Player"
+  - name: Block
+    module: Block
+    stereotype: abstract
+    fields:
+      - { name: blockType, type: char, visibility: private }
+      - { name: level, type: int, visibility: private }
+      - { name: cells, type: vector<Cell*>, visibility: private }
+      - { name: bottomLeft, type: Position, visibility: private }
+      - { name: orientation, type: int, visibility: private }
+      - { name: isHeavy, type: bool, visibility: private }
+      - { name: isPlaced, type: bool, visibility: private }
+      - { name: cellsFilled, type: int, visibility: private }
+      - { name: scored, type: bool, visibility: private }
     methods:
-      - name: "moveLeft"
-        return_type: "bool"
-        parameters: ["int n = 1"]
-        visibility: "public"
-      - name: "moveRight"
-        return_type: "bool"
-        parameters: ["int n = 1"]
-        visibility: "public"
-      - name: "moveDown"
-        return_type: "bool"
-        parameters: ["int n = 1"]
-        visibility: "public"
-      - name: "rotate"
-        return_type: "bool"
-        parameters: ["bool clockwise", "int multiplier = 1"]
-        visibility: "public"
-      - name: "drop"
-        return_type: "void"
-        parameters: ["int multiplier = 1"]
-        visibility: "public"
-      - name: "levelUp"
-        return_type: "void"
-        parameters: ["int multiplier = 1"]
-        visibility: "public"
-      - name: "levelDown"
-        return_type: "void"
-        parameters: ["int multiplier = 1"]
-        visibility: "public"
-      - name: "setLevel"
-        return_type: "void"
-        parameters: ["int newLevel"]
-        visibility: "public"
-      - name: "setNoRandom"
-        return_type: "void"
-        parameters: ["const string& file"]
-        visibility: "public"
-      - name: "setRandom"
-        return_type: "void"
-        visibility: "public"
-      - name: "applySpecialAction"
-        return_type: "void"
-        parameters: ["SpecialAction* action"]
-        visibility: "public"
-      - name: "setBlind"
-        return_type: "void"
-        parameters: ["bool blind"]
-        visibility: "public"
-      - name: "incrementHeavyEffect"
-        return_type: "void"
-        visibility: "public"
-      - name: "forceBlock"
-        return_type: "void"
-        parameters: ["char type"]
-        visibility: "public"
-      - name: "replaceBlock"
-        return_type: "void"
-        parameters: ["char type"]
-        visibility: "public"
-      - name: "isGameOver"
-        return_type: "bool"
-        visibility: "public"
-        const: true
-      - name: "reset"
-        return_type: "void"
-        visibility: "public"
+      - { name: Block, kind: constructor, parameters: ["char type", "int level", "bool heavy = false"], visibility: public }
+      - { name: ~Block, kind: destructor, visibility: public, virtual: true }
+      - { name: setPosition, return_type: void, parameters: ["const Position& pos"], visibility: public }
+      - { name: getPosition, return_type: Position, visibility: public, const: true }
+      - { name: rotateClockwise, return_type: void, visibility: public }
+      - { name: rotateCounterClockwise, return_type: void, visibility: public }
+      - { name: getCurrentPositions, return_type: vector<Position>, visibility: public, const: true }
+      - { name: getType, return_type: char, visibility: public, const: true }
+      - { name: getLevel, return_type: int, visibility: public, const: true }
+      - { name: heavy, return_type: bool, visibility: public, const: true }
+      - { name: setHeavy, return_type: void, parameters: ["bool heavy"], visibility: public }
+      - { name: placed, return_type: bool, visibility: public, const: true }
+      - { name: setPlaced, return_type: void, parameters: ["bool placed"], visibility: public }
+      - { name: setCellsFilled, return_type: void, parameters: ["int num"], visibility: public }
+      - { name: addCell, return_type: void, parameters: ["Cell* cell"], visibility: public }
+      - { name: removeCell, return_type: void, parameters: ["Cell* cell"], visibility: public }
+      - { name: getCells, return_type: "const vector<Cell*>&", visibility: public, const: true }
+      - { name: isFilled, return_type: bool, visibility: public }
+      - { name: decrementCell, return_type: void, visibility: public }
+      - { name: getOrientation, return_type: int, visibility: public, const: true }
+      - { name: hasScored, return_type: bool, visibility: public, const: true }
+      - { name: setScored, return_type: void, parameters: ["bool scored = true"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, pure_virtual: true }
     relationships:
-      - type: "composition"
-        target: "Board"
-        multiplicity: "1"
-      - type: "composition"
-        target: "Block"
-        multiplicity: "*"
-      - type: "composition"
-        target: "Level"
-        multiplicity: "1"
-      - type: "dependency"
-        target: "SpecialAction"
+      - { type: aggregation, target: Cell, multiplicity: "*" }
+      - { type: dependency, target: Position }
 
-  - name: "Board"
-    module: "Board"
-    parent: "Subject"
+  - name: IBlock
+    module: IBlock
+    parent: Block
     methods:
-      - name: "placeBlock"
-        return_type: "bool"
-        parameters: ["Block* block"]
-        visibility: "public"
-      - name: "canPlace"
-        return_type: "bool"
-        parameters: ["Block* block", "int row", "int col"]
-        visibility: "public"
-        const: true
-      - name: "canPlaceAtPositions"
-        return_type: "bool"
-        parameters: ["const vector<Position>& positions"]
-        visibility: "public"
-        const: true
-      - name: "removeBlock"
-        return_type: "void"
-        parameters: ["Block* block"]
-        visibility: "public"
-      - name: "clearFullRows"
-        return_type: "int"
-        visibility: "public"
-      - name: "isRowFull"
-        return_type: "bool"
-        parameters: ["int row"]
-        visibility: "public"
-        const: true
-      - name: "clearRow"
-        return_type: "void"
-        parameters: ["int row"]
-        visibility: "public"
-      - name: "dropRowsAbove"
-        return_type: "void"
-        parameters: ["int clearedRow"]
-        visibility: "public"
-      - name: "createStarBlock"
-        return_type: "Block*"
-        visibility: "public"
-    relationships:
-      - type: "composition"
-        target: "Cell"
-        multiplicity: "*"
-      - type: "aggregation"
-        target: "Block"
-        multiplicity: "*"
-      - type: "dependency"
-        target: "Position"
-      - type: "inheritance"
-        target: "Subject"
+      - { name: IBlock, kind: constructor, parameters: ["int level", "bool heavy = false"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, override: true }
 
-  - name: "Block"
-    module: "Block"
-    abstract: true
+  - name: JBlock
+    module: JBlock
+    parent: Block
     methods:
-      - name: "setPosition"
-        return_type: "void"
-        parameters: ["const Position& pos"]
-        visibility: "public"
-      - name: "getCurrentPositions"
-        return_type: "vector<Position>"
-        visibility: "public"
-        const: true
-      - name: "rotateClockwise"
-        return_type: "void"
-        visibility: "public"
-      - name: "rotateCounterClockwise"
-        return_type: "void"
-        visibility: "public"
-      - name: "addCell"
-        return_type: "void"
-        parameters: ["Cell* cell"]
-        visibility: "public"
-      - name: "removeCell"
-        return_type: "void"
-        parameters: ["Cell* cell"]
-        visibility: "public"
-      - name: "isFilled"
-        return_type: "bool"
-        visibility: "public"
-      - name: "decrementCell"
-        return_type: "void"
-        visibility: "public"
-    relationships:
-      - type: "aggregation"
-        target: "Cell"
-        multiplicity: "*"
-      - type: "dependency"
-        target: "Position"
+      - { name: JBlock, kind: constructor, parameters: ["int level", "bool heavy = false"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, override: true }
 
-  # Block Subclasses
-  - name: "IBlock"
-    module: "IBlock"
-    parent: "Block"
-    methods: []
-
-  - name: "JBlock"
-    module: "JBlock"
-    parent: "Block"
-    methods: []
-
-  - name: "LBlock"
-    module: "LBlock"
-    parent: "Block"
-    methods: []
-
-  - name: "OBlock"
-    module: "OBlock"
-    parent: "Block"
-    methods: []
-
-  - name: "SBlock"
-    module: "SBlock"
-    parent: "Block"
-    methods: []
-
-  - name: "ZBlock"
-    module: "ZBlock"
-    parent: "Block"
-    methods: []
-
-  - name: "TBlock"
-    module: "TBlock"
-    parent: "Block"
-    methods: []
-
-  - name: "StarBlock"
-    module: "StarBlock"
-    parent: "Block"
-    methods: []
-
-  # Level Classes
-  - name: "Level"
-    module: "Level"
-    abstract: true
+  - name: LBlock
+    module: LBlock
+    parent: Block
     methods:
-      - name: "generateBlock"
-        return_type: "unique_ptr<Block>"
-        visibility: "public"
-        pure_virtual: true
-      - name: "setRandom"
-        return_type: "void"
-        parameters: ["bool random"]
-        visibility: "public"
-        virtual: true
-      - name: "setSequenceFile"
-        return_type: "void"
-        parameters: ["const string& filename"]
-        visibility: "public"
-    relationships:
-      - type: "dependency"
-        target: "Block"
+      - { name: LBlock, kind: constructor, parameters: ["int level", "bool heavy = false"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, override: true }
 
-  - name: "Level0"
-    module: "Level0"
-    parent: "Level"
+  - name: OBlock
+    module: OBlock
+    parent: Block
     methods:
-      - name: "generateBlock"
-        return_type: "unique_ptr<Block>"
-        visibility: "public"
-        override: true
+      - { name: OBlock, kind: constructor, parameters: ["int level", "bool heavy = false"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, override: true }
 
-  - name: "Level1"
-    module: "Level1"
-    parent: "Level"
+  - name: SBlock
+    module: SBlock
+    parent: Block
     methods:
-      - name: "generateBlock"
-        return_type: "unique_ptr<Block>"
-        visibility: "public"
-        override: true
+      - { name: SBlock, kind: constructor, parameters: ["int level", "bool heavy = false"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, override: true }
 
-  - name: "Level2"
-    module: "Level2"
-    parent: "Level"
+  - name: ZBlock
+    module: ZBlock
+    parent: Block
     methods:
-      - name: "generateBlock"
-        return_type: "unique_ptr<Block>"
-        visibility: "public"
-        override: true
+      - { name: ZBlock, kind: constructor, parameters: ["int level", "bool heavy = false"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, override: true }
 
-  - name: "Level3"
-    module: "Level3"
-    parent: "Level"
+  - name: TBlock
+    module: TBlock
+    parent: Block
     methods:
-      - name: "generateBlock"
-        return_type: "unique_ptr<Block>"
-        visibility: "public"
-        override: true
+      - { name: TBlock, kind: constructor, parameters: ["int level", "bool heavy = false"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, override: true }
 
-  - name: "Level4"
-    module: "Level4"
-    parent: "Level"
+  - name: StarBlock
+    module: StarBlock
+    parent: Block
     methods:
-      - name: "generateBlock"
-        return_type: "unique_ptr<Block>"
-        visibility: "public"
-        override: true
+      - { name: StarBlock, kind: constructor, parameters: ["int level", "bool heavy = false"], visibility: public }
+      - { name: getShapeCoordinates, return_type: vector<Position>, visibility: protected, const: true, override: true }
 
-  # Observer Pattern Classes
-  - name: "Observer"
-    module: "Observer"
-    abstract: true
+  - name: Level
+    module: Level
+    stereotype: abstract
+    fields:
+      - { name: levelNum, type: int, visibility: protected }
+      - { name: isRandom, type: bool, visibility: protected }
+      - { name: sequence, type: string, visibility: protected }
+      - { name: filestream, type: ifstream, visibility: protected }
+      - { name: seed, type: int, visibility: protected }
     methods:
-      - name: "notify"
-        return_type: "void"
-        visibility: "public"
-        pure_virtual: true
+      - { name: Level, kind: constructor, parameters: ["int levelNum", "const string& sequence", "int seed"], visibility: public }
+      - { name: ~Level, kind: destructor, visibility: public, virtual: true }
+      - { name: generateBlock, return_type: unique_ptr<Block>, visibility: public, pure_virtual: true }
+      - { name: setRandom, return_type: void, parameters: ["bool random"], visibility: public, virtual: true }
+      - { name: setSequenceFile, return_type: void, parameters: ["const string& filename"], visibility: public }
+      - { name: getLevelNum, return_type: int, visibility: public, const: true }
+      - { name: random, return_type: bool, visibility: public, const: true }
+      - { name: createBlock, return_type: unique_ptr<Block>, parameters: ["char type", "bool heavy = false"], visibility: protected }
 
-  - name: "Subject"
-    module: "Subject"
-    abstract: true
+  - name: Level0
+    module: Level0
+    parent: Level
     methods:
-      - name: "attach"
-        return_type: "void"
-        parameters: ["Observer* o"]
-        visibility: "public"
-      - name: "detach"
-        return_type: "void"
-        parameters: ["Observer* o"]
-        visibility: "public"
-      - name: "notifyObservers"
-        return_type: "void"
-        visibility: "public"
-    relationships:
-      - type: "aggregation"
-        target: "Observer"
-        multiplicity: "*"
+      - { name: Level0, kind: constructor, parameters: ["const string& sequence", "int seed"], visibility: public }
+      - { name: generateBlock, return_type: unique_ptr<Block>, visibility: public, override: true }
 
-  - name: "TextDisplay"
-    module: "TextDisplay"
-    parent: "Observer"
+  - name: Level1
+    module: Level1
+    parent: Level
     methods:
-      - name: "notify"
-        return_type: "void"
-        visibility: "public"
-        override: true
-      - name: "display"
-        return_type: "void"
-        parameters: ["ostream& out"]
-        visibility: "public"
-      - name: "setHiScore"
-        return_type: "void"
-        parameters: ["int score"]
-        visibility: "public"
-      - name: "updateBoards"
-        return_type: "void"
-        parameters: ["Board* b1", "Board* b2"]
-        visibility: "public"
-    relationships:
-      - type: "aggregation"
-        target: "Board"
-        multiplicity: "2"
-      - type: "aggregation"
-        target: "Player"
-        multiplicity: "2"
-      - type: "inheritance"
-        target: "Observer"
+      - { name: Level1, kind: constructor, parameters: ["const string& sequence", "int seed"], visibility: public }
+      - { name: generateBlock, return_type: unique_ptr<Block>, visibility: public, override: true }
 
-  - name: "GraphicsDisplay"
-    module: "GraphicsDisplay"
-    parent: "Observer"
+  - name: Level2
+    module: Level2
+    parent: Level
     methods:
-      - name: "notify"
-        return_type: "void"
-        visibility: "public"
-        override: true
-      - name: "setHiScore"
-        return_type: "void"
-        parameters: ["int score"]
-        visibility: "public"
-      - name: "updateBoards"
-        return_type: "void"
-        parameters: ["Board* b1", "Board* b2"]
-        visibility: "public"
-    relationships:
-      - type: "composition"
-        target: "Xwindow"
-        multiplicity: "1"
-      - type: "aggregation"
-        target: "Board"
-        multiplicity: "2"
-      - type: "aggregation"
-        target: "Player"
-        multiplicity: "2"
-      - type: "inheritance"
-        target: "Observer"
+      - { name: Level2, kind: constructor, parameters: ["const string& sequence", "int seed"], visibility: public }
+      - { name: generateBlock, return_type: unique_ptr<Block>, visibility: public, override: true }
 
-  - name: "Xwindow"
-    module: "XWindow"
+  - name: Level3
+    module: Level3
+    parent: Level
     methods:
-      - name: "fillRectangle"
-        return_type: "void"
-        parameters: ["int x", "int y", "int width", "int height", "int colour=Black"]
-        visibility: "public"
-      - name: "drawString"
-        return_type: "void"
-        parameters: ["int x", "int y", "std::string msg"]
-        visibility: "public"
+      - { name: Level3, kind: constructor, parameters: ["const string& sequence", "int seed"], visibility: public }
+      - { name: generateBlock, return_type: unique_ptr<Block>, visibility: public, override: true }
 
-  # Command Interpreter
-  - name: "CommandInterpreter"
-    module: "CommandInterpreter"
+  - name: Level4
+    module: Level4
+    parent: Level
     methods:
-      - name: "parse"
-        return_type: "bool"
-        parameters: ["const string& input", "Player* current", "Player* opponent"]
-        visibility: "public"
-      - name: "executeSequence"
-        return_type: "void"
-        parameters: ["const string& filename", "Player* current", "Player* opponent"]
-        visibility: "public"
-    relationships:
-      - type: "dependency"
-        target: "Player"
+      - { name: Level4, kind: constructor, parameters: ["const string& sequence", "int seed"], visibility: public }
+      - { name: generateBlock, return_type: unique_ptr<Block>, visibility: public, override: true }
 
-  # Special Action Classes
-  - name: "SpecialAction"
-    module: "SpecialAction"
-    abstract: true
+  - name: Subject
+    module: Subject
+    stereotype: abstract
+    fields:
+      - { name: observers, type: vector<Observer*>, visibility: protected }
     methods:
-      - name: "apply"
-        return_type: "void"
-        parameters: ["Player* player"]
-        visibility: "public"
-        pure_virtual: true
-      - name: "getName"
-        return_type: "string"
-        visibility: "public"
-        const: true
-        pure_virtual: true
-    relationships:
-      - type: "dependency"
-        target: "Player"
+      - { name: attach, return_type: void, parameters: ["Observer* o"], visibility: public }
+      - { name: detach, return_type: void, parameters: ["Observer* o"], visibility: public }
+      - { name: notifyObservers, return_type: void, visibility: public }
+      - { name: ~Subject, kind: destructor, visibility: public, pure_virtual: true }
 
-  - name: "BlindAction"
-    module: "SpecialAction"
-    parent: "SpecialAction"
+  - name: Observer
+    module: Observer
+    stereotype: abstract
     methods:
-      - name: "apply"
-        return_type: "void"
-        parameters: ["Player* player"]
-        visibility: "public"
-        override: true
-      - name: "getName"
-        return_type: "string"
-        visibility: "public"
-        const: true
-        override: true
+      - { name: notify, return_type: void, visibility: public, pure_virtual: true }
+      - { name: ~Observer, kind: destructor, visibility: public, virtual: true }
 
-  - name: "HeavyAction"
-    module: "SpecialAction"
-    parent: "SpecialAction"
+  - name: Board
+    module: Board
+    parent: Subject
+    fields:
+      - { name: WIDTH, type: "inline static const int = 11", visibility: private }
+      - { name: HEIGHT, type: "inline static const int = 18", visibility: private }
+      - { name: DISPLAY_HEIGHT, type: "inline static const int = 15", visibility: private }
+      - { name: cells, type: "vector<vector<unique_ptr<Cell>>>", visibility: private }
+      - { name: placedBlocks, type: "vector<Block*>", visibility: private }
     methods:
-      - name: "apply"
-        return_type: "void"
-        parameters: ["Player* player"]
-        visibility: "public"
-        override: true
-      - name: "getName"
-        return_type: "string"
-        visibility: "public"
-        const: true
-        override: true
+      - { name: Board, kind: constructor, visibility: public }
+      - { name: ~Board, kind: destructor, visibility: public }
+      - { name: Board, kind: copy_constructor, visibility: public, deleted: true }
+      - { name: operator=, kind: assignment, visibility: public, deleted: true }
+      - { name: placeBlock, return_type: bool, parameters: ["Block* block"], visibility: public }
+      - { name: canPlace, return_type: bool, parameters: ["Block* block", "int row", "int col"], visibility: public, const: true }
+      - { name: canPlaceAtPositions, return_type: bool, parameters: ["const vector<Position>& positions"], visibility: public, const: true }
+      - { name: removeBlock, return_type: void, parameters: ["Block* block"], visibility: public }
+      - { name: clearFullRows, return_type: int, visibility: public }
+      - { name: isRowFull, return_type: bool, parameters: ["int row"], visibility: public, const: true }
+      - { name: clearRow, return_type: void, parameters: ["int row"], visibility: public }
+      - { name: dropRowsAbove, return_type: void, parameters: ["int clearedRow"], visibility: public }
+      - { name: createStarBlock, return_type: Block*, visibility: public }
+      - { name: getCell, return_type: Cell*, parameters: ["int row", "int col"], visibility: public, const: true }
+      - { name: getWidth, return_type: int, visibility: public, const: true }
+      - { name: getHeight, return_type: int, visibility: public, const: true }
+      - { name: getDisplayHeight, return_type: int, visibility: public, const: true }
 
-  - name: "ForceAction"
-    module: "SpecialAction"
-    parent: "SpecialAction"
+  - name: SpecialAction
+    module: Player
+    stereotype: abstract
     methods:
-      - name: "apply"
-        return_type: "void"
-        parameters: ["Player* player"]
-        visibility: "public"
-        override: true
-      - name: "getName"
-        return_type: "string"
-        visibility: "public"
-        const: true
-        override: true
+      - { name: apply, return_type: void, parameters: ["Player* player"], visibility: public, pure_virtual: true }
+      - { name: getName, return_type: string, visibility: public, const: true, pure_virtual: true }
+      - { name: ~SpecialAction, kind: destructor, visibility: public, virtual: true }
 
-  # Utility Classes
-  - name: "Cell"
-    module: "Cell"
+  - name: BlindAction
+    module: Player
+    parent: SpecialAction
     methods:
-      - name: "occupy"
-        return_type: "void"
-        parameters: ["Block* block"]
-        visibility: "public"
-      - name: "clear"
-        return_type: "void"
-        visibility: "public"
-    relationships:
-      - type: "aggregation"
-        target: "Block"
-        multiplicity: "0..1"
+      - { name: apply, return_type: void, parameters: ["Player* player"], visibility: public, override: true }
+      - { name: getName, return_type: string, visibility: public, const: true, override: true }
 
-  - name: "Position"
-    module: "Position"
-    struct: true
+  - name: HeavyAction
+    module: Player
+    parent: SpecialAction
     methods:
-      - name: "operator=="
-        return_type: "bool"
-        parameters: ["const Position& other"]
-        visibility: "public"
-        const: true
-      - name: "operator!="
-        return_type: "bool"
-        parameters: ["const Position& other"]
-        visibility: "public"
-        const: true
+      - { name: apply, return_type: void, parameters: ["Player* player"], visibility: public, override: true }
+      - { name: getName, return_type: string, visibility: public, const: true, override: true }
 
-# Relationships Summary
-relationships_summary:
-  inheritance:
-    - "Board extends Subject"
-    - "TextDisplay extends Observer"
-    - "GraphicsDisplay extends Observer"
-    - "Block (abstract) - parent of IBlock, JBlock, LBlock, OBlock, SBlock, ZBlock, TBlock, StarBlock"
-    - "Level (abstract) - parent of Level0, Level1, Level2, Level3, Level4"
-    - "SpecialAction (abstract) - parent of BlindAction, HeavyAction, ForceAction"
-  
-  composition:
-    - "Game contains 2 Player (unique_ptr)"
-    - "Game contains 1 TextDisplay (unique_ptr)"
-    - "Game contains 0..1 GraphicsDisplay (unique_ptr)"
-    - "Game contains 1 CommandInterpreter (unique_ptr)"
-    - "Player contains 1 Board (unique_ptr)"
-    - "Player contains * Block (unique_ptr in allBlocks vector)"
-    - "Player contains 1 Level (unique_ptr)"
-    - "Board contains * Cell (unique_ptr in cells grid)"
-    - "GraphicsDisplay contains 1 Xwindow (raw pointer)"
-  
-  aggregation:
-    - "Board aggregates * Block (placedBlocks vector)"
-    - "Block aggregates * Cell (cells vector)"
-    - "Cell aggregates 0..1 Block (occupiedBy pointer)"
-    - "Subject aggregates * Observer (observers vector)"
-    - "TextDisplay aggregates 2 Board (board1, board2 pointers)"
-    - "TextDisplay aggregates 2 Player (player1, player2 pointers)"
-    - "GraphicsDisplay aggregates 2 Board (board1, board2 pointers)"
-    - "GraphicsDisplay aggregates 2 Player (player1, player2 pointers)"
-  
-  dependency:
-    - "Player depends on SpecialAction"
-    - "Board depends on Position"
-    - "Block depends on Position"
-    - "Level depends on Block"
-    - "CommandInterpreter depends on Player"
+  - name: ForceAction
+    module: Player
+    parent: SpecialAction
+    fields:
+      - { name: blockType, type: char, visibility: private }
+    methods:
+      - { name: ForceAction, kind: constructor, parameters: ["char blockType"], visibility: public }
+      - { name: apply, return_type: void, parameters: ["Player* player"], visibility: public, override: true }
+      - { name: getName, return_type: string, visibility: public, const: true, override: true }
+      - { name: getBlockType, return_type: char, visibility: public, const: true }
 
-# Design Patterns Used
-design_patterns:
-  - name: "Observer Pattern"
-    description: "Subject-Observer pattern for display updates"
-    participants:
-      - "Subject (abstract) - notifies observers of changes"
-      - "Observer (abstract) - receives notifications"
-      - "Board extends Subject - game board that notifies displays"
-      - "TextDisplay extends Observer - text-based display"
-      - "GraphicsDisplay extends Observer - graphical display"
-  
-  - name: "Strategy Pattern"
-    description: "Level classes implement different block generation strategies"
-    participants:
-      - "Level (abstract strategy)"
-      - "Level0, Level1, Level2, Level3, Level4 (concrete strategies)"
-      - "Player (context that uses level strategy)"
-  
-  - name: "Template Method Pattern"
-    description: "Block class defines template with getShapeCoordinates() hook"
-    participants:
-      - "Block (abstract template)"
-      - "IBlock, JBlock, LBlock, OBlock, SBlock, ZBlock, TBlock, StarBlock (concrete implementations)"
-  
-  - name: "Command Pattern"
-    description: "SpecialAction classes encapsulate actions"
-    participants:
-      - "SpecialAction (abstract command)"
-      - "BlindAction, HeavyAction, ForceAction (concrete commands)"
-      - "Player (receiver)"
+  - name: Player
+    module: Player
+    fields:
+      - { name: board, type: unique_ptr<Board>, visibility: private }
+      - { name: currentBlock, type: unique_ptr<Block>, visibility: private }
+      - { name: nextBlock, type: unique_ptr<Block>, visibility: private }
+      - { name: level, type: unique_ptr<Level>, visibility: private }
+      - { name: allBlocks, type: vector<unique_ptr<Block>>, visibility: private }
+      - { name: score, type: int, visibility: private }
+      - { name: currentLevel, type: int, visibility: private }
+      - { name: isBlind, type: bool, visibility: private }
+      - { name: heavyEffect, type: int, visibility: private }
+      - { name: blocksWithoutClear, type: int, visibility: private }
+      - { name: lastRowsCleared, type: int, visibility: private }
+      - { name: sequenceFile, type: string, visibility: private }
+      - { name: seed, type: int, visibility: private }
+      - { name: isRandom, type: bool, visibility: private }
+    methods:
+      - { name: Player, kind: constructor, parameters: ["int startLevel", "const string& scriptFile", "int seed"], visibility: public }
+      - { name: ~Player, kind: destructor, visibility: public, defaulted: true }
+      - { name: moveLeft, return_type: bool, parameters: ["int n = 1"], visibility: public }
+      - { name: moveRight, return_type: bool, parameters: ["int n = 1"], visibility: public }
+      - { name: moveDown, return_type: bool, parameters: ["int n = 1"], visibility: public }
+      - { name: rotate, return_type: bool, parameters: ["bool clockwise", "int multiplier = 1"], visibility: public }
+      - { name: drop, return_type: void, parameters: ["int multiplier = 1"], visibility: public }
+      - { name: levelUp, return_type: void, parameters: ["int multiplier = 1"], visibility: public }
+      - { name: levelDown, return_type: void, parameters: ["int multiplier = 1"], visibility: public }
+      - { name: setLevel, return_type: void, parameters: ["int newLevel"], visibility: public }
+      - { name: setNoRandom, return_type: void, parameters: ["const string& file"], visibility: public }
+      - { name: setRandom, return_type: void, visibility: public }
+      - { name: applySpecialAction, return_type: void, parameters: ["SpecialAction* action"], visibility: public }
+      - { name: setBlind, return_type: void, parameters: ["bool blind"], visibility: public }
+      - { name: incrementHeavyEffect, return_type: void, visibility: public }
+      - { name: forceBlock, return_type: void, parameters: ["char type"], visibility: public }
+      - { name: replaceBlock, return_type: void, parameters: ["char type"], visibility: public }
+      - { name: getBoard, return_type: Board*, visibility: public, const: true }
+      - { name: getCurrentBlock, return_type: Block*, visibility: public, const: true }
+      - { name: getNextBlock, return_type: Block*, visibility: public, const: true }
+      - { name: getScore, return_type: int, visibility: public, const: true }
+      - { name: getLevel, return_type: int, visibility: public, const: true }
+      - { name: blind, return_type: bool, visibility: public, const: true }
+      - { name: getHeavyEffect, return_type: int, visibility: public, const: true }
+      - { name: getBlocksWithoutClear, return_type: int, visibility: public, const: true }
+      - { name: getLastRowsCleared, return_type: int, visibility: public, const: true }
+      - { name: addScore, return_type: void, parameters: ["int points"], visibility: public }
+      - { name: setScore, return_type: void, parameters: ["int newScore"], visibility: public }
+      - { name: isGameOver, return_type: bool, visibility: public, const: true }
+      - { name: reset, return_type: void, visibility: public }
+      - { name: generateNextBlock, return_type: void, visibility: private }
+      - { name: canMove, return_type: bool, parameters: ["const Position& newPos"], visibility: private }
+      - { name: applyHeavyDrop, return_type: void, parameters: ["bool rotateOn = false"], visibility: private }
+      - { name: dropOnce, return_type: void, visibility: private }
+      - { name: createLevel, return_type: unique_ptr<Level>, parameters: ["int levelNum", "const string& scriptFile", "int seed"], visibility: private }
 
-# Notes
-notes:
-  - "All classes use C++20 modules (export module)"
-  - "Memory management uses smart pointers (unique_ptr) for ownership"
-  - "Raw pointers used for non-owning relationships (aggregation)"
-  - "Board uses Observer pattern to notify displays of changes"
-  - "Player owns all blocks through allBlocks vector"
-  - "Board owns cells but blocks reference them (non-owning)"
-  - "Game manages two players and coordinates gameplay"
-  - "Only public methods shown (constructors, destructors, accessors, mutators excluded)"
+  - name: CommandInterpreter
+    module: CommandInterpreter
+    fields:
+      - { name: commandMap, type: map<string,string>, visibility: private }
+    methods:
+      - { name: CommandInterpreter, kind: constructor, visibility: public }
+      - { name: parse, return_type: bool, parameters: ["const string& input", "Player* current", "Player* opponent"], visibility: public }
+      - { name: executeSequence, return_type: void, parameters: ["const string& filename", "Player* current", "Player* opponent"], visibility: public }
+      - { name: CommandInitialise, return_type: void, visibility: private }
+      - { name: matchCommand, return_type: string, parameters: ["const string& input"], visibility: private }
+
+  - name: TextDisplay
+    module: TextDisplay
+    parent: Observer
+    fields:
+      - { name: ROW_COUNT, type: "static const int = 18", visibility: private }
+      - { name: COL_COUNT, type: "static const int = 11", visibility: private }
+      - { name: grid1, type: "char[ROW_COUNT][COL_COUNT]", visibility: private }
+      - { name: grid2, type: "char[ROW_COUNT][COL_COUNT]", visibility: private }
+      - { name: board1, type: Board*, visibility: private }
+      - { name: board2, type: Board*, visibility: private }
+      - { name: player1, type: Player*, visibility: private }
+      - { name: player2, type: Player*, visibility: private }
+      - { name: hiScore, type: int, visibility: private }
+    methods:
+      - { name: TextDisplay, kind: constructor, parameters: ["Board* b1", "Board* b2", "Player* p1", "Player* p2"], visibility: public }
+      - { name: notify, return_type: void, visibility: public, override: true }
+      - { name: display, return_type: void, parameters: ["ostream& out"], visibility: public }
+      - { name: setHiScore, return_type: void, parameters: ["int score"], visibility: public }
+      - { name: updateBoards, return_type: void, parameters: ["Board* b1", "Board* b2"], visibility: public }
+      - { name: updateGrid, return_type: void, parameters: ["char grid[ROW_COUNT][COL_COUNT]", "Board* board", "Player* player"], visibility: private }
+      - { name: drawGrid, return_type: void, parameters: ["ostream& out", "char grid[ROW_COUNT][COL_COUNT]", "Player* player", "int playerNum"], visibility: private }
+
+  - name: GraphicsDisplay
+    module: GraphicsDisplay
+    parent: Observer
+    constants:
+      - { name: CELL_SIZE, type: "static const int = 20" }
+      - { name: BOARD_WIDTH, type: "static const int = 11" }
+      - { name: BOARD_HEIGHT, type: "static const int = 15" }
+      - { name: BOARD_OFFSET_X, type: "static const int = 50" }
+      - { name: BOARD1_OFFSET_Y, type: "static const int = 100" }
+      - { name: BOARD2_OFFSET_X, type: "static const int = 350" }
+    fields:
+      - { name: xw, type: unique_ptr<Xwindow>, visibility: private }
+      - { name: board1, type: Board*, visibility: private }
+      - { name: board2, type: Board*, visibility: private }
+      - { name: player1, type: Player*, visibility: private }
+      - { name: player2, type: Player*, visibility: private }
+      - { name: hiScore, type: int, visibility: private }
+    methods:
+      - { name: GraphicsDisplay, kind: constructor, parameters: ["Board* b1", "Board* b2", "Player* p1", "Player* p2"], visibility: public }
+      - { name: ~GraphicsDisplay, kind: destructor, visibility: public, defaulted: true }
+      - { name: notify, return_type: void, visibility: public, override: true }
+      - { name: setHiScore, return_type: void, parameters: ["int score"], visibility: public }
+      - { name: updateBoards, return_type: void, parameters: ["Board* b1", "Board* b2"], visibility: public }
+      - { name: getBlockColor, return_type: int, parameters: ["char blockType"], visibility: private, const: true }
+      - { name: drawCell, return_type: void, parameters: ["int x", "int y", "int color"], visibility: private }
+      - { name: drawBoard, return_type: void, parameters: ["int boardNum"], visibility: private }
+      - { name: drawBorders, return_type: void, visibility: private }
+      - { name: drawInfo, return_type: void, visibility: private }
+      - { name: drawNextBlock, return_type: void, parameters: ["Player* player", "int x", "int y"], visibility: private }
+
+  - name: Xwindow
+    module: XWindow
+    fields:
+      - { name: d, type: Display*, visibility: private }
+      - { name: w, type: Window, visibility: private }
+      - { name: s, type: int, visibility: private }
+      - { name: gc, type: GC, visibility: private }
+      - { name: colours, type: "unsigned long[10]", visibility: private }
+    enums:
+      - { name: Colour, values: ["White","Black","Red","Green","Blue","Cyan","Yellow","Magenta","Orange","Brown"] }
+    methods:
+      - { name: Xwindow, kind: constructor, parameters: ["int width = 500", "int height = 500"], visibility: public }
+      - { name: ~Xwindow, kind: destructor, visibility: public }
+      - { name: Xwindow, kind: copy_constructor, visibility: public, deleted: true }
+      - { name: operator=, kind: assignment, visibility: public, deleted: true }
+      - { name: fillRectangle, return_type: void, parameters: ["int x", "int y", "int width", "int height", "int colour = Black"], visibility: public }
+      - { name: drawString, return_type: void, parameters: ["int x", "int y", "std::string msg"], visibility: public }
+
+  - name: Game
+    module: Game
+    fields:
+      - { name: player1, type: unique_ptr<Player>, visibility: private }
+      - { name: player2, type: unique_ptr<Player>, visibility: private }
+      - { name: currentPlayer, type: Player*, visibility: private }
+      - { name: opponent, type: Player*, visibility: private }
+      - { name: textDisplay, type: unique_ptr<TextDisplay>, visibility: private }
+      - { name: graphicsDisplay, type: unique_ptr<GraphicsDisplay>, visibility: private }
+      - { name: interpreter, type: unique_ptr<CommandInterpreter>, visibility: private }
+      - { name: seed, type: int, visibility: private }
+      - { name: hiScore, type: int, visibility: private }
+      - { name: textOnly, type: bool, visibility: private }
+    methods:
+      - { name: Game, kind: constructor, parameters: ["int startLevel", "int seed", "const string& scriptFile1", "const string& scriptFile2", "bool textOnly"], visibility: public }
+      - { name: ~Game, kind: destructor, visibility: public, defaulted: true }
+      - { name: run, return_type: void, visibility: public }
+      - { name: switchPlayer, return_type: void, visibility: public }
+      - { name: restart, return_type: void, visibility: public }
+      - { name: handleSpecialAction, return_type: void, visibility: public }
+      - { name: getHiScore, return_type: int, visibility: public, const: true }
+      - { name: updateHiScore, return_type: void, visibility: public }
+
+relationships:
+  - { type: inheritance, source: Board, target: Subject }
+  - { type: inheritance, source: TextDisplay, target: Observer }
+  - { type: inheritance, source: GraphicsDisplay, target: Observer }
+  - { type: inheritance, source: [IBlock,JBlock,LBlock,OBlock,SBlock,ZBlock,TBlock,StarBlock], target: Block }
+  - { type: inheritance, source: [Level0,Level1,Level2,Level3,Level4], target: Level }
+  - { type: inheritance, source: BlindAction, target: SpecialAction }
+  - { type: inheritance, source: HeavyAction, target: SpecialAction }
+  - { type: inheritance, source: ForceAction, target: SpecialAction }
+  - { type: aggregation, source: Player, target: Board }
+  - { type: aggregation, source: Player, target: Level }
+  - { type: aggregation, source: Player, target: Block }
+  - { type: aggregation, source: Board, target: Block }
+  - { type: aggregation, source: Board, target: Cell }
+  - { type: composition, source: Game, target: Player }
+  - { type: composition, source: Game, target: TextDisplay }
+  - { type: composition, source: Game, target: GraphicsDisplay }
+  - { type: composition, source: Game, target: CommandInterpreter }
+  - { type: dependency, source: CommandInterpreter, target: Player }
+  - { type: dependency, source: GraphicsDisplay, target: Xwindow }
+

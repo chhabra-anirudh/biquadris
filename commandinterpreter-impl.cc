@@ -42,7 +42,7 @@ void CommandInterpreter::CommandInitialise() {
     commandMap["T"] = "T";
 }
 
-std::string CommandInterpreter::matchCommand(const std::string& input) {
+string CommandInterpreter::matchCommand(const string& input) {
     auto it = commandMap.find(input);
     if (it != commandMap.end()) {
         return it->second;
@@ -140,7 +140,7 @@ bool CommandInterpreter::parse(const string& input, Player* current, Player* opp
 void CommandInterpreter::executeSequence(const string& filename, Player* current, Player* opponent){
     ifstream file{filename};
     if (!file) {
-        std::cerr << "Could not open sequence file: " << filename << std::endl;
+        cerr << "Could not open sequence file: " << filename << endl;
         return;
     }
 

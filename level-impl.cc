@@ -22,7 +22,7 @@ Level::Level(int levelNum, const string& sequence, int seed)
         if (!sequence.empty()) {
             filestream.open(sequence);
             if (!filestream) {
-                std::cerr << "Error opening sequence file: " << sequence << std::endl;
+                cerr << "Error opening sequence file: " << sequence << endl;
             }
         }
     }
@@ -64,7 +64,7 @@ void Level::setSequenceFile(const string& file) {
     }
     filestream.open(file);
     if (!filestream) {
-        std::cerr << "Error opening sequence file: " << file << std::endl;
+        cerr << "Error opening sequence file: " << file << endl;
     }
 }
 

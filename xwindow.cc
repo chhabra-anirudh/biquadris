@@ -4,6 +4,8 @@ export module XWindow;
 import <iostream>;
 import <string>;
 
+using namespace std;
+
 export class Xwindow {
   Display *d;
   Window w;
@@ -24,5 +26,5 @@ export class Xwindow {
   void fillRectangle(int x, int y, int width, int height, int colour=Black);
 
   // Draws a string
-  void drawString(int x, int y, std::string msg);
+  void drawString(int x, int y, string msg);
 };
