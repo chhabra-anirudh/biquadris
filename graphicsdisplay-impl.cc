@@ -2,7 +2,6 @@ module GraphicsDisplay;
 
 import <vector>;
 import <sstream>;
-import <vector>;
 import Position;
 import Board;
 import Player;
@@ -11,17 +10,11 @@ import XWindow;
 
 using namespace std;
 
-GraphicsDisplay:: GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
-    board1{b1}, board2{b2}, player1{p1}, player2{p2}, hiScore{0},
-    cachedScore1{-1}, cachedLevel1{-1}, cachedScore2{-1}, cachedLevel2{-1}, cachedHiScore{-1},
-    cachedNextBlock1{' '}, cachedNextBlock2{' '} {
+GraphicsDisplay::GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
+    board1{b1}, board2{b2}, player1{p1}, player2{p2}, hiScore{0} {
         int windowWidth = 600;
         int windowHeight = 550;
         xw = new Xwindow(windowWidth, windowHeight);
-
-        // Initialize previous board state as not valid
-        board1Cache.resize(BOARD_HEIGHT * BOARD_WIDTH, -1);
-        board2Cache.resize(BOARD_HEIGHT * BOARD_WIDTH, -1);
 
         drawBorders();
         
@@ -53,7 +46,8 @@ int GraphicsDisplay::getBlockColor(char blockType) const {
     else if (blockType == 'T') return Xwindow::Red;
     else if (blockType == '*') return Xwindow::Brown;
     else if (blockType == 'S') return Xwindow::Magenta;
-    else return Xwindow::Black; 
+    else return Xwindow::Black;
+}
 
 void GraphicsDisplay::drawCell(int x, int y, int color) {
     // fill cell with color 
@@ -61,19 +55,15 @@ void GraphicsDisplay::drawCell(int x, int y, int color) {
 }
 
 void GraphicsDisplay::drawBoard(int boardNum) {
-    // select correct board, player and cache
     Board* board = (boardNum == 1) ? board1 : board2;
     Player* player = (boardNum == 1) ? player1 : player2;
-    vector<int>& cache = (boardNum == 1) ? board1Cache : board2Cache;
     
     int offsetX = (boardNum == 1) ? BOARD_OFFSET_X : BOARD2_OFFSET_X;
     int offsetY = BOARD1_OFFSET_Y;
 
-    // loop every cell for correct colour
-    
+    // redraw the entire board area every time we are notified
     for (int r = 0; r < BOARD_HEIGHT; ++r) {
         for (int c = 0; c < BOARD_WIDTH; ++c) {
-
             // convert board to pixel coordinates
             int x = offsetX + c * CELL_SIZE;
             int y = offsetY + (BOARD_HEIGHT - 1 - r) * CELL_SIZE;
@@ -111,14 +101,7 @@ void GraphicsDisplay::drawBoard(int boardNum) {
                 }
             }
 
-            // check if colour changes and redraw
-            int cacheIndex = r * BOARD_WIDTH + c;
-            if (cacheIndex >= 0 && cacheIndex < cache.size()) {
-                if (cache[cacheIndex] != color) {
-                    drawCell(x, y, color);
-                    cache[cacheIndex] = color;
-                }
-            }
+            drawCell(x, y, color);
         }
     }
 }
@@ -145,74 +128,52 @@ void GraphicsDisplay::drawBorders() {
 }
 
 void GraphicsDisplay::drawInfo() {
-    // update player 1
-    if (player1->getScore() != cachedScore1 || player1->getLevel() != cachedLevel1) {
-        xw->fillRectangle(BOARD_OFFSET_X, 0, 150, 80, Xwindow::White); // Clear P1 area
-        
-        std::ostringstream oss1;
-        oss1 << "Player 1";
-        xw->drawString(BOARD_OFFSET_X, 20, oss1.str());
-        
-        oss1.str("");
-        oss1 << "Level: " << player1->getLevel();
-        xw->drawString(BOARD_OFFSET_X, 40, oss1.str());
-        
-        oss1.str("");
-        oss1 << "Score: " << player1->getScore();
-        xw->drawString(BOARD_OFFSET_X, 60, oss1.str());
-        
-        cachedScore1 = player1->getScore();
-        cachedLevel1 = player1->getLevel();
-    }
+    // Clear header areas before drawing fresh text so each command reflects the latest state
+    xw->fillRectangle(BOARD_OFFSET_X, 0, 150, 80, Xwindow::White);
+    xw->fillRectangle(BOARD2_OFFSET_X, 0, 150, 80, Xwindow::White);
+    xw->fillRectangle(250, 0, 120, 30, Xwindow::White);
+    xw->fillRectangle(BOARD_OFFSET_X, 450, 150, 100, Xwindow::White);
+    xw->fillRectangle(BOARD2_OFFSET_X, 450, 150, 100, Xwindow::White);
 
-    //  update player 2
-    if (player2->getScore() != cachedScore2 || player2->getLevel() != cachedLevel2) {
-        xw->fillRectangle(BOARD2_OFFSET_X, 0, 150, 80, Xwindow::White); // Clear P2 area
-
-        std::ostringstream oss2;
-        oss2 << "Player 2";
-        xw->drawString(BOARD2_OFFSET_X, 20, oss2.str());
-        
-        oss2.str("");
-        oss2 << "Level: " << player2->getLevel();
-        xw->drawString(BOARD2_OFFSET_X, 40, oss2.str());
-        
-        oss2.str("");
-        oss2 << "Score: " << player2->getScore();
-        xw->drawString(BOARD2_OFFSET_X, 60, oss2.str());
-        
-        cachedScore2 = player2->getScore();
-        cachedLevel2 = player2->getLevel();
-    }
+    std::ostringstream oss;
+    oss << "Player 1";
+    xw->drawString(BOARD_OFFSET_X, 20, oss.str());
     
-    // update high score
-    if (hiScore != cachedHiScore) {
-        xw->fillRectangle(250, 0, 100, 30, Xwindow::White); // Clear Hi Score area
-        ostringstream ossHi;
-        ossHi << "Hi Score: " << hiScore;
-        xw->drawString(250, 20, ossHi.str());
-        cachedHiScore = hiScore;
-    }
+    oss.str("");
+    oss.clear();
+    oss << "Level: " << player1->getLevel();
+    xw->drawString(BOARD_OFFSET_X, 40, oss.str());
     
-    // draw next block preview
+    oss.str("");
+    oss.clear();
+    oss << "Score: " << player1->getScore();
+    xw->drawString(BOARD_OFFSET_X, 60, oss.str());
 
-    Block* next1 = player1->getNextBlock();
-    char nextType1 = next1 ? next1->getType() : ' ';
-    if (nextType1 != cachedNextBlock1) {
-         xw->fillRectangle(BOARD_OFFSET_X, 450, 150, 100, Xwindow::White); // Clear P1 Next area
-         xw->drawString(BOARD_OFFSET_X, 475, "Next:");
-         drawNextBlock(player1, BOARD_OFFSET_X, 485);
-         cachedNextBlock1 = nextType1;
-    }
-
-    Block* next2 = player2->getNextBlock();
-    char nextType2 = next2 ? next2->getType() : ' ';
-    if (nextType2 != cachedNextBlock2) {
-         xw->fillRectangle(BOARD2_OFFSET_X, 450, 150, 100, Xwindow::White); // Clear P2 Next area
-         xw->drawString(BOARD2_OFFSET_X, 475, "Next:");
-         drawNextBlock(player2, BOARD2_OFFSET_X, 485);
-         cachedNextBlock2 = nextType2;
-    }
+    oss.str("");
+    oss.clear();
+    oss << "Player 2";
+    xw->drawString(BOARD2_OFFSET_X, 20, oss.str());
+    
+    oss.str("");
+    oss.clear();
+    oss << "Level: " << player2->getLevel();
+    xw->drawString(BOARD2_OFFSET_X, 40, oss.str());
+    
+    oss.str("");
+    oss.clear();
+    oss << "Score: " << player2->getScore();
+    xw->drawString(BOARD2_OFFSET_X, 60, oss.str());
+    
+    oss.str("");
+    oss.clear();
+    oss << "Hi Score: " << hiScore;
+    xw->drawString(250, 20, oss.str());
+    
+    xw->drawString(BOARD_OFFSET_X, 475, "Next:");
+    drawNextBlock(player1, BOARD_OFFSET_X, 485);
+    
+    xw->drawString(BOARD2_OFFSET_X, 475, "Next:");
+    drawNextBlock(player2, BOARD2_OFFSET_X, 485);
 }
 
 

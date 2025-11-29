@@ -21,9 +21,7 @@ Xwindow::Xwindow(int width, int height) {
   XSelectInput(d, w, ExposureMask | KeyPressMask);
   XMapRaised(d, w);
 
-  Pixmap pix = XCreatePixmap(d, w, width,
-        height, DefaultDepth(d, DefaultScreen(d)));
-  gc = XCreateGC(d, pix, 0, (XGCValues *)0);
+  gc = XCreateGC(d, w, 0, (XGCValues *)0);
 
   XFlush(d);
   XFlush(d);
