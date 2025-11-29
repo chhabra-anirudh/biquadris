@@ -19,13 +19,13 @@ GraphicsDisplay:: GraphicsDisplay(Board* b1, Board* b2, Player *p1, Player *p2):
         int windowHeight = 550;
         xw = new Xwindow(windowWidth, windowHeight);
 
-        // Initialize board caches with -1 (invalid color)
+        // Initialize previous board state as not valid
         board1Cache.resize(BOARD_HEIGHT * BOARD_WIDTH, -1);
         board2Cache.resize(BOARD_HEIGHT * BOARD_WIDTH, -1);
 
-        // Draw static borders once
         drawBorders();
         
+        // initial render of boards and blocks
         notify();
 }
 
@@ -33,6 +33,7 @@ void GraphicsDisplay::setHiScore(int score) {
     hiScore = score;
 }
 
+// update pointers to boards
 void GraphicsDisplay::updateBoards(Board* b1, Board* b2) {
     board1 = b1;
     board2 = b2;
@@ -42,6 +43,7 @@ GraphicsDisplay::~GraphicsDisplay() {
     delete xw;
 }
 
+// associate colour for each block
 int GraphicsDisplay::getBlockColor(char blockType) const {
     if (blockType == 'I') return Xwindow::Cyan;
     else if (blockType == 'J') return Xwindow::Blue;
@@ -51,15 +53,15 @@ int GraphicsDisplay::getBlockColor(char blockType) const {
     else if (blockType == 'T') return Xwindow::Red;
     else if (blockType == '*') return Xwindow::Brown;
     else if (blockType == 'S') return Xwindow::Magenta;
-    else return Xwindow::Black;  // Default color for unknown block types
-}
+    else return Xwindow::Black; 
 
 void GraphicsDisplay::drawCell(int x, int y, int color) {
-    // Just fill the cell with color - no grid lines
+    // fill cell with color 
     xw->fillRectangle(x, y, CELL_SIZE, CELL_SIZE, color);
 }
 
 void GraphicsDisplay::drawBoard(int boardNum) {
+    // select correct board, player and cache
     Board* board = (boardNum == 1) ? board1 : board2;
     Player* player = (boardNum == 1) ? player1 : player2;
     vector<int>& cache = (boardNum == 1) ? board1Cache : board2Cache;
@@ -67,18 +69,18 @@ void GraphicsDisplay::drawBoard(int boardNum) {
     int offsetX = (boardNum == 1) ? BOARD_OFFSET_X : BOARD2_OFFSET_X;
     int offsetY = BOARD1_OFFSET_Y;
 
-    // 1. Determine the target state of the board
-    // We need to know the color of every cell.
-    // We can iterate and compute it, then compare with cache.
+    // loop every cell for correct colour
     
     for (int r = 0; r < BOARD_HEIGHT; ++r) {
         for (int c = 0; c < BOARD_WIDTH; ++c) {
+
+            // convert board to pixel coordinates
             int x = offsetX + c * CELL_SIZE;
             int y = offsetY + (BOARD_HEIGHT - 1 - r) * CELL_SIZE;
             
             int color = Xwindow::White; // Default empty
             
-            // Check static blocks
+            // draw correct blocks
             Cell* cell = board->getCell(r, c);
             if (cell && !cell->empty()) {
                 Block* block = cell->getBlock();
@@ -92,7 +94,7 @@ void GraphicsDisplay::drawBoard(int boardNum) {
                 color = Xwindow::Black;
             }
             
-            // Check current block (overlay)
+            // check if blind overlays the block colour
             Block* current = player->getCurrentBlock();
             if (current && !current->placed()) {
                 vector<Position> positions = current->getCurrentPositions();
@@ -109,7 +111,7 @@ void GraphicsDisplay::drawBoard(int boardNum) {
                 }
             }
 
-            // Dirty check
+            // check if colour changes and redraw
             int cacheIndex = r * BOARD_WIDTH + c;
             if (cacheIndex >= 0 && cacheIndex < cache.size()) {
                 if (cache[cacheIndex] != color) {
@@ -122,6 +124,8 @@ void GraphicsDisplay::drawBoard(int boardNum) {
 }
 
 void GraphicsDisplay::drawBorders() {
+
+    // draw player 1 board
     int x1 = BOARD_OFFSET_X - 2;
     int y1 = BOARD1_OFFSET_Y - 2;
     int w = BOARD_WIDTH * CELL_SIZE + 4;
@@ -132,6 +136,7 @@ void GraphicsDisplay::drawBorders() {
     xw->fillRectangle(x1 + w - 2, y1, 2, h, Xwindow::Black);
     xw->fillRectangle(x1, y1 + h - 2, w, 2, Xwindow::Black);
     
+    // draw player 2 board
     int x2 = BOARD2_OFFSET_X - 2;
     xw->fillRectangle(x2, y1, w, 2, Xwindow::Black);
     xw->fillRectangle(x2, y1, 2, h, Xwindow::Black);
@@ -140,7 +145,7 @@ void GraphicsDisplay::drawBorders() {
 }
 
 void GraphicsDisplay::drawInfo() {
-    // Check and redraw Player 1 Info
+    // update player 1
     if (player1->getScore() != cachedScore1 || player1->getLevel() != cachedLevel1) {
         xw->fillRectangle(BOARD_OFFSET_X, 0, 150, 80, Xwindow::White); // Clear P1 area
         
@@ -160,7 +165,7 @@ void GraphicsDisplay::drawInfo() {
         cachedLevel1 = player1->getLevel();
     }
 
-    // Check and redraw Player 2 Info
+    //  update player 2
     if (player2->getScore() != cachedScore2 || player2->getLevel() != cachedLevel2) {
         xw->fillRectangle(BOARD2_OFFSET_X, 0, 150, 80, Xwindow::White); // Clear P2 area
 
@@ -180,7 +185,7 @@ void GraphicsDisplay::drawInfo() {
         cachedLevel2 = player2->getLevel();
     }
     
-    // Check and redraw Hi Score
+    // update high score
     if (hiScore != cachedHiScore) {
         xw->fillRectangle(250, 0, 100, 30, Xwindow::White); // Clear Hi Score area
         ostringstream ossHi;
@@ -189,7 +194,7 @@ void GraphicsDisplay::drawInfo() {
         cachedHiScore = hiScore;
     }
     
-    // Move Next: section below the board
+    // draw next block preview
 
     Block* next1 = player1->getNextBlock();
     char nextType1 = next1 ? next1->getType() : ' ';
@@ -210,25 +215,28 @@ void GraphicsDisplay::drawInfo() {
     }
 }
 
+
 void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
+    // preview the next block
     Block* next = player->getNextBlock();
     if (!next) return;
     
+    // temporary block positioning at origin
     Position origPos = next->getPosition();
     next->setPosition(Position(0, 0));
     std::vector<Position> positions = next->getCurrentPositions();
     
     int color = getBlockColor(next->getType());
     
-    // Find the height of the bounding box for this block
+    // determine height of block
     int maxRow = 0;
     for (const auto& pos : positions) {
         if (pos.row > maxRow) maxRow = pos.row;
     }
     
+    // draw every square in next block
     for (const auto& pos : positions) {
         int px = x + pos.col * CELL_SIZE;
-        // Invert Y-axis to match main board display (higher rows at top)
         int py = y + (maxRow - pos.row) * CELL_SIZE;
         drawCell(px, py, color);
     }
@@ -237,8 +245,8 @@ void GraphicsDisplay::drawNextBlock(Player* player, int x, int y) {
 }
 
 void GraphicsDisplay::notify() {
+    // redraw text and board
     drawInfo();
-    // drawBorders(); // Borders are static, drawn in constructor
     drawBoard(1);
     drawBoard(2);
 }
